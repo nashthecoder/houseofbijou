@@ -1,0 +1,1131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>House of Bijou — Build Stage Spec</title>
+<style>
+
+  :root {
+    --bg: #FAF6F4;
+    --surface: #FFFFFF;
+    --surface-sunk: #F4ECEA;
+    --text: #251A1E;
+    --text-muted: #71595E;
+    --text-faint: #9B8388;
+    --accent: #8C3049;
+    --accent-ink: #FFFFFF;
+    --accent-2: #A6641C;
+    --border: #E6D8D5;
+    --border-strong: #D8C4C1;
+    --rail-line: #E0CFCC;
+
+    --font-display: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, 'Times New Roman', serif;
+    --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #171114;
+      --surface: #1F1519;
+      --surface-sunk: #241820;
+      --text: #F3E6E7;
+      --text-muted: #BE9DA1;
+      --text-faint: #8A6C70;
+      --accent: #E68AA1;
+      --accent-ink: #241014;
+      --accent-2: #E3A75A;
+      --border: #382A2E;
+      --border-strong: #4A363B;
+      --rail-line: #3A2B2F;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #171114;
+    --surface: #1F1519;
+    --surface-sunk: #241820;
+    --text: #F3E6E7;
+    --text-muted: #BE9DA1;
+    --text-faint: #8A6C70;
+    --accent: #E68AA1;
+    --accent-ink: #241014;
+    --accent-2: #E3A75A;
+    --border: #382A2E;
+    --border-strong: #4A363B;
+    --rail-line: #3A2B2F;
+  }
+
+  * { box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, .stage-link:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 1.75rem 6rem;
+  }
+
+  /* ---------- Header ---------- */
+
+  .masthead {
+    padding: 3.5rem 0 2.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-2);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .eyebrow .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-2);
+    display: inline-block;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(2rem, 4vw, 2.9rem);
+    line-height: 1.12;
+    margin: 0;
+    text-wrap: balance;
+    max-width: 18ch;
+  }
+
+  .lede {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    max-width: 62ch;
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  .lede strong { color: var(--text); font-weight: 600; }
+
+  .summary-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .summary-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .summary-stat .num {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--accent);
+  }
+
+  .summary-stat .label {
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-faint);
+  }
+
+  /* ---------- Landing view: stage cards ---------- */
+
+  .stage-cards {
+    list-style: none;
+    margin: 2.75rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+
+  @media (max-width: 780px) {
+    .stage-cards { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 480px) {
+    .stage-cards { grid-template-columns: 1fr; }
+  }
+
+  .stage-card {
+    appearance: none;
+    text-align: left;
+    background: var(--surface);
+    color: inherit;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.4rem 1.3rem;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    font: inherit;
+    transition: border-color 0.15s ease;
+  }
+
+  .stage-card:hover, .stage-card:focus-visible { border-color: var(--accent); }
+
+  .stage-card .num {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: var(--accent-2);
+  }
+
+  .stage-card .name {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .stage-card .when {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--text-faint);
+  }
+
+  .stage-card .teaser {
+    font-size: 0.86rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-top: 0.15rem;
+  }
+
+  .stage-card .go {
+    margin-top: auto;
+    padding-top: 0.6rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  /* ---------- Detail view ---------- */
+
+  .back-btn {
+    appearance: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    padding: 0;
+    margin: 2.5rem 0 0.25rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .back-btn:hover { color: var(--accent); }
+
+  /* ---------- Horizontal tab bar ---------- */
+
+  .tablist {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    gap: 0.5rem;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    margin-top: 2rem;
+    margin-bottom: 2.75rem;
+  }
+
+  .tab-btn {
+    appearance: none;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font: inherit;
+    color: var(--text-muted);
+    padding: 0 1.35rem 0.85rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+    white-space: nowrap;
+  }
+
+  .tab-btn:first-child { padding-left: 0.1rem; }
+
+  .tab-btn .num {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    color: var(--text-faint);
+  }
+
+  .tab-btn .name {
+    font-weight: 600;
+    font-size: 0.98rem;
+    color: var(--text);
+  }
+
+  .tab-btn .when {
+    font-size: 0.76rem;
+    color: var(--text-faint);
+  }
+
+  .tab-btn:not([aria-selected="true"]):hover { border-bottom-color: var(--border-strong); }
+  .tab-btn:not([aria-selected="true"]):hover .name { color: var(--text); }
+
+  .tab-btn[aria-selected="true"] { border-bottom-color: var(--accent); }
+  .tab-btn[aria-selected="true"] .num,
+  .tab-btn[aria-selected="true"] .name { color: var(--accent); }
+
+  main {
+    min-width: 0;
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  .intro-note {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    background: var(--surface-sunk);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.9rem 1.1rem;
+    margin: 0 0 1.25rem;
+    line-height: 1.55;
+  }
+
+  .arch-note {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    background: var(--surface-sunk);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 0.9rem 1.1rem;
+    margin: 0 0 3rem;
+    line-height: 1.55;
+  }
+
+  .arch-note .arch-label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+  }
+
+  .intro-note b, .arch-note b { color: var(--text); }
+
+  /* ---------- Stage sections ---------- */
+
+  .stage {
+    scroll-margin-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .stage-head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    margin-bottom: 2rem;
+  }
+
+  .stage-kicker {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent-2);
+  }
+
+  .stage-head h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.6rem, 2.6vw, 2.1rem);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .stage-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.6rem;
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    margin-top: 0.15rem;
+  }
+
+  .stage-meta span { display: flex; gap: 0.4rem; }
+  .stage-meta b { color: var(--text); font-weight: 600; }
+
+  .stage-desc {
+    font-size: 0.98rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 62ch;
+  }
+
+  /* subsection blocks */
+
+  .block {
+    margin-top: 2rem;
+  }
+
+  .block-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .block-head .marker {
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .block.screens .marker { background: var(--accent); border-radius: 50%; }
+  .block.features .marker { background: var(--accent-2); border-radius: 2px; }
+  .block.func .marker { background: var(--text-faint); border-radius: 0; transform: rotate(45deg); }
+
+  .block-head h3 {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text);
+  }
+
+  .block-head .count {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--text-faint);
+  }
+
+  ul.item-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  ul.item-list li {
+    font-size: 0.96rem;
+    line-height: 1.5;
+    padding-left: 1.1rem;
+    position: relative;
+  }
+
+  .block.screens li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .block.features li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.5em;
+    width: 6px;
+    height: 6px;
+    background: var(--accent-2);
+    border-radius: 1px;
+  }
+
+  .block.func {
+    background: var(--surface-sunk);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.1rem 1.3rem;
+  }
+
+  .block.func li {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    padding-left: 1.2rem;
+    line-height: 1.55;
+  }
+
+  .block.func li::before {
+    content: "›";
+    position: absolute;
+    left: 0;
+    top: -0.05em;
+    color: var(--text-faint);
+    font-size: 0.95rem;
+  }
+
+  ul.item-list li b { color: var(--text); font-weight: 600; }
+  .block.func li b { color: var(--accent-2); font-weight: 600; }
+
+  /* ---------- Addendum: tooling block ---------- */
+
+  .block.tool .marker {
+    background: var(--accent-2);
+    border-radius: 2px;
+    transform: rotate(45deg);
+  }
+
+  .block.tool li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.5em;
+    width: 6px;
+    height: 6px;
+    background: var(--accent-2);
+    border-radius: 1px;
+    transform: rotate(45deg);
+  }
+
+  /* journey block */
+
+  .block.journey .marker {
+    width: 0;
+    height: 0;
+    background: none;
+    border-radius: 0;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 8px solid var(--accent);
+  }
+
+  ol.journey-list {
+    list-style: none;
+    margin: 0 0 0 4px;
+    padding: 0;
+    border-left: 2px solid var(--rail-line);
+  }
+
+  ol.journey-list li {
+    position: relative;
+    padding: 0 0 1.2rem 1.7rem;
+    font-size: 0.96rem;
+    line-height: 1.55;
+  }
+
+  ol.journey-list li:last-child { padding-bottom: 0; }
+
+  ol.journey-list li::before {
+    content: attr(data-step);
+    position: absolute;
+    left: -14px;
+    top: -1px;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  ol.journey-list li b { color: var(--text); font-weight: 600; }
+
+  footer {
+    background: var(--surface-sunk);
+    border-top: 1px solid var(--border);
+    margin-top: 3rem;
+  }
+
+  .footer-inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 1.75rem 1.75rem 2.25rem;
+    font-size: 0.84rem;
+    color: var(--text-faint);
+    line-height: 1.6;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <section id="view-landing" class="view">
+
+    <header class="masthead">
+      <div class="eyebrow"><span class="dot"></span>House of Bijou — Product Spec</div>
+      <h1>Screens, features &amp; functionality by build stage</h1>
+      <p class="lede">
+        Four stages, each shipping a distinct layer of the platform — from the private MVP build
+        through to a publicly governed cooperative. Drawn from the <strong>Community D'App Brief</strong>
+        (Tich Labs / Mama Tech) and the <strong>Concept Note</strong> (House of Bijou Community
+        Centre), reorganised here as MVP → Alpha → Beta → Public Launch.
+      </p>
+      <div class="summary-strip">
+        <div class="summary-stat"><span class="num">4</span><span class="label">Build stages</span></div>
+        <div class="summary-stat"><span class="num">31</span><span class="label">Screens specified</span></div>
+        <div class="summary-stat"><span class="num">Wk 9 – M9+</span><span class="label">Timeline span</span></div>
+        <div class="summary-stat"><span class="num">1,000+</span><span class="label">Users at public launch</span></div>
+      </div>
+    </header>
+
+    <ul class="stage-cards">
+      <li>
+        <button type="button" class="stage-card" data-target="mvp">
+          <span class="num">01</span>
+          <span class="name">MVP</span>
+          <span class="when">Weeks 9–16</span>
+          <span class="teaser">The safety and communal-space layer, built and hardened before real users touch it.</span>
+          <span class="go">View stage →</span>
+        </button>
+      </li>
+      <li>
+        <button type="button" class="stage-card" data-target="alpha">
+          <span class="num">02</span>
+          <span class="name">Alpha</span>
+          <span class="when">~Month 4</span>
+          <span class="teaser">The same features, now live under real threat conditions with 500–1,000 invited users.</span>
+          <span class="go">View stage →</span>
+        </button>
+      </li>
+      <li>
+        <button type="button" class="stage-card" data-target="beta">
+          <span class="num">03</span>
+          <span class="name">Beta</span>
+          <span class="when">Months 5–8</span>
+          <span class="teaser">Money without a paper trail — wallet, transfers, and USSD for zero-connectivity access.</span>
+          <span class="go">View stage →</span>
+        </button>
+      </li>
+      <li>
+        <button type="button" class="stage-card" data-target="public">
+          <span class="num">04</span>
+          <span class="name">Public Launch</span>
+          <span class="when">Month 9+</span>
+          <span class="teaser">The platform hands off to community governance and cooperative ownership.</span>
+          <span class="go">View stage →</span>
+        </button>
+      </li>
+      <li>
+        <button type="button" class="stage-card" data-target="tooling">
+          <span class="num">05</span>
+          <span class="name">Tooling</span>
+          <span class="when">Addendum</span>
+          <span class="teaser">The tech stacks behind the build — the Rails core, Signal/WASM encryption, and Polygon/Solana contracts.</span>
+          <span class="go">View addendum →</span>
+        </button>
+      </li>
+    </ul>
+
+  </section>
+
+  <section id="view-detail" class="view" hidden>
+
+    <button type="button" class="back-btn" id="back-to-landing">← Back to overview</button>
+
+    <div class="tablist" role="tablist" aria-label="Build stages">
+      <button type="button" class="tab-btn" id="tab-mvp" role="tab" aria-controls="mvp" aria-selected="true" data-target="mvp"><span class="num">01</span><span class="name">MVP</span><span class="when">Weeks 9–16</span></button>
+      <button type="button" class="tab-btn" id="tab-alpha" role="tab" aria-controls="alpha" aria-selected="false" tabindex="-1" data-target="alpha"><span class="num">02</span><span class="name">Alpha</span><span class="when">~Month 4</span></button>
+      <button type="button" class="tab-btn" id="tab-beta" role="tab" aria-controls="beta" aria-selected="false" tabindex="-1" data-target="beta"><span class="num">03</span><span class="name">Beta</span><span class="when">Months 5–8</span></button>
+      <button type="button" class="tab-btn" id="tab-public" role="tab" aria-controls="public" aria-selected="false" tabindex="-1" data-target="public"><span class="num">04</span><span class="name">Public Launch</span><span class="when">Month 9+</span></button>
+      <button type="button" class="tab-btn" id="tab-tooling" role="tab" aria-controls="tooling" aria-selected="false" tabindex="-1" data-target="tooling"><span class="num">05</span><span class="name">Tooling</span><span class="when">Addendum</span></button>
+    </div>
+
+    <main>
+
+      <p class="intro-note">
+        The brief itself labels everything through Month 4 as "MVP" and the rest as Layers 2–3.
+        Here that's split into the MVP / Alpha / Beta / Public Launch framing you asked for. Each
+        stage covers four things — the <b>User journey</b> a person actually walks through,
+        <b>Screens</b> (the UI views), <b>Features</b> (what a user can do), and
+        <b>Functionality</b> (how each feature behaves under the hood).
+      </p>
+
+      <p class="arch-note">
+        <span class="arch-label">Architecture note</span>
+        <b>Local-first, no cloud sync</b> — per the Concept Note's stated community priority, which
+        supersedes the Brief's original server-encrypted-storage model. Contacts, chat history, the
+        mutual aid ledger, avatars, and stories all live encrypted on-device and sync directly,
+        device-to-device, inside a trusted circle. Anything that must reach someone else in the
+        moment — a panic alert, a chat message in transit, a USSD reply — passes through a blind
+        relay that delivers it and discards it immediately, never writing it to disk. Aggregate
+        views (Public Launch's resource-flow analytics, governance tallies) are built from opt-in
+        submissions and tallies only, never a copy of anyone's raw activity.
+      </p>
+
+      <!-- ================= STAGE 1: MVP ================= -->
+      <section class="stage" id="mvp" role="tabpanel" aria-labelledby="tab-mvp" tabindex="0">
+        <div class="stage-head">
+          <div class="stage-kicker">Stage 01 · Layer 1 — Safety &amp; Community</div>
+          <h2>MVP — build &amp; internal test</h2>
+          <div class="stage-meta">
+            <span><b>When</b> Weeks 9–16 (≈ Month 2–4)</span>
+            <span><b>Where</b> Private. One local-first codebase (Hotwire + Turbo Native) → web, Android, iOS</span>
+            <span><b>Who sees it</b> Dev team + 20–30 hand-picked testers</span>
+          </div>
+          <p class="stage-desc">
+            The safety and communal-space layer, built and hardened before anyone outside the build
+            team touches it. Nothing ships here that isn't required to get someone out of danger,
+            move through the app as themselves, or find their chosen family.
+          </p>
+        </div>
+
+        <div class="block journey">
+          <div class="block-head"><span class="marker"></span><h3>User journey</h3><span class="count">11 steps</span></div>
+          <ol class="journey-list">
+            <li data-step="1"><b>Invited</b> — a community coordinator or partner org shares install instructions off-app (WhatsApp, in person), never through a public store listing</li>
+            <li data-step="2"><b>Installs the decoy</b> — the app lands on the home screen looking like Calculator, Weather, Game, or Sports, with colors that can be customized</li>
+            <li data-step="3"><b>Unlocks it for the first time</b> — triple-taps the decoy (or enters a PIN) to reveal the real app</li>
+            <li data-step="4"><b>Agrees to the community values</b> — reads and accepts the values agreement; this is a hard gate, nothing past it is optional</li>
+            <li data-step="5"><b>Sets up account, stealth &amp; identity</b> — email/password, a PIN, a decoy skin + colors, and an avatar/pseudonym; no real name is required anywhere in the app</li>
+            <li data-step="6"><b>Adds trusted contacts</b> — names the 3–5 people who'll receive a panic alert</li>
+            <li data-step="7"><b>Lands on the real dashboard</b> — panic button, chat, mutual aid feed, and chosen-family stories, all in one place</li>
+            <li data-step="8"><b>Daily use — chat &amp; stories</b> — sends an encrypted message with a delete-timer, reads or shares a chosen-family story under their pseudonym</li>
+            <li data-step="9"><b>Checks mutual aid</b> — opens a request, or pledges support, inside the trusted circle</li>
+            <li data-step="10"><b>Crisis moment</b> — taps panic (or shakes the phone, or holds volume); location and an alert go to trusted contacts via the app and SMS fallback</li>
+            <li data-step="11"><b>Hides again</b> — one tap back to the decoy the instant someone might see the screen</li>
+          </ol>
+        </div>
+
+        <div class="block screens">
+          <div class="block-head"><span class="marker"></span><h3>Screens</h3><span class="count">16</span></div>
+          <ul class="item-list">
+            <li><b>Decoy launcher</b> — calculator, weather, game, or sports skin, with custom colors/branding</li>
+            <li><b>Unlock gesture / PIN pad</b> — hidden inside the decoy (triple-tap or PIN)</li>
+            <li><b>Real dashboard</b> — home hub: panic button, chat, mutual aid, stories, one-tap hide</li>
+            <li><b>Trusted contacts manager</b> — add/edit the 3–5 people who receive alerts</li>
+            <li><b>Panic confirmation</b> — what's about to send, to whom, and a cancel window</li>
+            <li><b>Chat list</b></li>
+            <li><b>Chat thread</b> — with a per-message delete-timer control</li>
+            <li><b>Mutual aid feed</b> — open requests inside your 20–50 person trusted circle</li>
+            <li><b>New mutual aid request</b> — amount, purpose, deadline</li>
+            <li><b>Mutual aid request detail</b> — pledge ledger ("who gave what, when")</li>
+            <li><b>Chosen family stories feed</b> — narrative posts from the trusted circle, shown by pseudonym</li>
+            <li><b>New story</b> — share a family, healing, or chosen-family narrative, with a visibility choice</li>
+            <li><b>Onboarding — values agreement</b> — the community agreement gate</li>
+            <li><b>Onboarding — account, stealth &amp; identity setup</b> — email/password, decoy skin + colors, PIN/gesture, avatar/pseudonym</li>
+            <li><b>Accessibility settings</b> — text scale, contrast, voice input</li>
+            <li><b>Community admin panel</b> — coordinator view: members, moderation, values-review flags</li>
+          </ul>
+        </div>
+
+        <div class="block features">
+          <div class="block-head"><span class="marker"></span><h3>Features</h3><span class="count">10</span></div>
+          <ul class="item-list">
+            <li>Stealth access — disguised launcher with a hidden unlock</li>
+            <li>Customizable disguise skin — four decoy options, plus custom colors/branding</li>
+            <li>Anonymous avatars/pseudonyms — no real name required anywhere in the app</li>
+            <li>Panic alert to 3–5 trusted contacts, with location</li>
+            <li>Trusted 3-person mutual check-ins (no central watcher)</li>
+            <li>End-to-end encrypted chat with delete-on-timer</li>
+            <li>Mutual aid requests with a transparent pledge ledger</li>
+            <li>Chosen-family narrative-building — share and read family/healing stories inside the trusted circle, protected from outing</li>
+            <li>Values-based onboarding gate</li>
+            <li>Accessibility built in from day one, not bolted on</li>
+          </ul>
+        </div>
+
+        <div class="block func">
+          <div class="block-head"><span class="marker"></span><h3>Functionality</h3><span class="count">7</span></div>
+          <ul class="item-list">
+            <li><b>Stealth:</b> PIN stored as a local hash, never plaintext; the toggle is client-side only — nothing is logged anywhere, on-device or off</li>
+            <li><b>Panic:</b> Geolocation API (GPS → WiFi-triangulation fallback) → the alert passes through a blind relay (Africa's Talking SMS gateway, push fallback) that delivers and immediately discards it — no record is written server-side, not even temporarily</li>
+            <li><b>Chat:</b> libsignal compiled to WebAssembly encrypts client-side; messages relay through the server in memory only, never touching disk — full history lives solely in the on-device encrypted store</li>
+            <li><b>Mutual aid:</b> requests and pledges sync directly between devices inside the trusted circle (local-first, peer-synced); the ledger itself lives on-device, not in a central database</li>
+            <li><b>Identity:</b> an avatar/pseudonym is chosen at onboarding and is the only identity ever shown in chat, stories, or the mutual aid feed — it's never linked to an email or legal name server-side</li>
+            <li><b>Stories:</b> chosen-family narrative posts are encrypted and peer-synced only to the author's trusted circle — never public, never indexed, never stored server-side</li>
+            <li><b>Onboarding:</b> values agreement is a hard gate — the real dashboard does not unlock until it's accepted</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ================= STAGE 2: ALPHA ================= -->
+      <section class="stage" id="alpha" role="tabpanel" aria-labelledby="tab-alpha" tabindex="0" hidden>
+        <div class="stage-head">
+          <div class="stage-kicker">Stage 02 · Layer 1 — Safety, live</div>
+          <h2>Alpha — closed beta launch</h2>
+          <div class="stage-meta">
+            <span><b>When</b> ~Month 4</span>
+            <span><b>Where</b> Invite-only, via community partner organisations</span>
+            <span><b>Who sees it</b> 500–1,000 users (closed beta)</span>
+          </div>
+          <p class="stage-desc">
+            The same safety feature set as the MVP, now live under real threat conditions instead
+            of test conditions. The additions here exist to make the app trustworthy at scale, not
+            to add new capability.
+          </p>
+        </div>
+
+        <div class="block journey">
+          <div class="block-head"><span class="marker"></span><h3>User journey</h3><span class="count">7 steps</span></div>
+          <ol class="journey-list">
+            <li data-step="1"><b>Enrolled</b> — formally added to the 500–1,000-person closed beta through a partner org, not a public signup</li>
+            <li data-step="2"><b>Strengthens login</b> — optionally turns on 2FA and biometric unlock during setup, on top of the PIN</li>
+            <li data-step="3"><b>Lives with it</b> — uses stealth, panic, chat, and mutual aid under actual risk, not a test scenario</li>
+            <li data-step="4"><b>Reports friction</b> — flags a bug, or a near-miss that felt scary, through the in-app feedback screen</li>
+            <li data-step="5"><b>Hits a guardrail</b> — an accidental double-tap on panic gets rate-limited instead of spamming every trusted contact</li>
+            <li data-step="6"><b>Session expires quietly</b> — logged out after 24h idle, logs back in without losing anything stored on-device</li>
+            <li data-step="7"><b>Feedback closes the loop</b> — reports feed into the Values Review Board's quarterly review, which can change onboarding or moderation policy</li>
+          </ol>
+        </div>
+
+        <div class="block screens">
+          <div class="block-head"><span class="marker"></span><h3>New screens</h3><span class="count">3</span></div>
+          <ul class="item-list">
+            <li><b>In-app feedback / report</b> — a direct channel back to community coordinators</li>
+            <li><b>2FA setup</b> — SMS or TOTP, optional</li>
+            <li><b>Biometric unlock prompt</b> — fingerprint/face as an alternative to the PIN</li>
+          </ul>
+        </div>
+
+        <div class="block features">
+          <div class="block-head"><span class="marker"></span><h3>Features</h3><span class="count">4</span></div>
+          <ul class="item-list">
+            <li>Every MVP feature, now carrying real users and real risk</li>
+            <li>Optional two-factor authentication</li>
+            <li>Biometric unlock</li>
+            <li>Structured feedback loop from users to coordinators</li>
+          </ul>
+        </div>
+
+        <div class="block func">
+          <div class="block-head"><span class="marker"></span><h3>Functionality</h3><span class="count">3</span></div>
+          <ul class="item-list">
+            <li><b>Session:</b> no server-tracked session — the unlocked state lives only in local encrypted storage and re-locks after 24h idle; 2FA, where enabled, verifies through a one-time relay that discards the code immediately after use</li>
+            <li><b>Panic:</b> the delivery relay rate-limits repeated triggers to stop spam or false-trigger floods, without ever retaining alert content</li>
+            <li><b>Process:</b> security hardening pass ahead of the annual third-party pentest; feedback routed into the Values Review Board's quarterly cycle</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ================= STAGE 3: BETA ================= -->
+      <section class="stage" id="beta" role="tabpanel" aria-labelledby="tab-beta" tabindex="0" hidden>
+        <div class="stage-head">
+          <div class="stage-kicker">Stage 03 · Layer 2 — Economic resilience</div>
+          <h2>Beta — money, without the paper trail</h2>
+          <div class="stage-meta">
+            <span><b>When</b> Months 5–8</span>
+            <span><b>Where</b> Still closed community; adds a phone-only surface (no app needed)</span>
+            <span><b>With</b> African Women in Blockchain (wallet + smart contracts)</span>
+          </div>
+          <p class="stage-desc">
+            Safety keeps someone alive; this layer keeps them independent. Built so it also works
+            on a basic phone with zero data connection.
+          </p>
+        </div>
+
+        <div class="block journey">
+          <div class="block-head"><span class="marker"></span><h3>User journey</h3><span class="count">7 steps</span></div>
+          <ol class="journey-list">
+            <li data-step="1"><b>Introduced to the wallet</b> — existing safety-layer users are invited to a community-led wallet education workshop</li>
+            <li data-step="2"><b>Sets up a wallet</b> — plain-language onboarding, walked through by a peer rather than a stranger</li>
+            <li data-step="3"><b>Sends a low-trace transfer</b> — pays or receives money peer-to-peer without tripping an ID or M-Pesa flag</li>
+            <li data-step="4"><b>Checks the ledger</b> — views transaction history; mutual aid pledges now settle as real transfers, not just promises</li>
+            <li data-step="5"><b>Reads survival-work guidance</b> — browses the income diversification hub for safer approaches to informal or criminalised work</li>
+            <li data-step="6"><b>Goes phone-only when needed</b> — someone without a smartphone dials <code>*123*BIJOU#</code> for open requests, <code>*123*ALERT#</code> to panic, <code>*123*BALANCE#</code> to check funds</li>
+            <li data-step="7"><b>Builds community credit</b> — consistent giving and receiving becomes a visible, transparent track record inside the circle</li>
+          </ol>
+        </div>
+
+        <div class="block screens">
+          <div class="block-head"><span class="marker"></span><h3>Screens</h3><span class="count">6</span></div>
+          <ul class="item-list">
+            <li><b>Wallet dashboard</b> — balance and recent activity</li>
+            <li><b>Send money</b></li>
+            <li><b>Request / receive money</b></li>
+            <li><b>Transaction history</b> — ledger view</li>
+            <li><b>Income diversification hub</b> — guides on safer approaches to survival work</li>
+            <li><b>Wallet setup</b> — plain-language crypto onboarding, taught by the community</li>
+          </ul>
+        </div>
+
+        <div class="block features">
+          <div class="block-head"><span class="marker"></span><h3>Features</h3><span class="count">5</span></div>
+          <ul class="item-list">
+            <li>Low-trace peer-to-peer transfers — sidesteps M-Pesa/ID-mismatch flags</li>
+            <li>Transparent mutual aid ledger doubling as a community credit record</li>
+            <li>Income diversification resource library</li>
+            <li>USSD access with zero internet required — <code>*123*BIJOU#</code> (latest requests), <code>*123*ALERT#</code> (panic), <code>*123*BALANCE#</code> (wallet)</li>
+            <li>Blockchain wallet on Polygon or Solana</li>
+          </ul>
+        </div>
+
+        <div class="block func">
+          <div class="block-head"><span class="marker"></span><h3>Functionality</h3><span class="count">4</span></div>
+          <ul class="item-list">
+            <li><b>USSD:</b> a webhook relay receives the USSD request and replies over encrypted SMS — works on any phone, and nothing is retained after the reply sends</li>
+            <li><b>Transfers:</b> open-source smart contracts, co-developed with African Women in Blockchain, settle on-chain</li>
+            <li><b>Sequencing:</b> wallet-education workshops run before this ships, not after</li>
+            <li><b>Governance prep:</b> token economics and Snapshot gasless-voting infrastructure are stood up here, then switched on in Public Launch</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ================= STAGE 4: PUBLIC LAUNCH ================= -->
+      <section class="stage" id="public" role="tabpanel" aria-labelledby="tab-public" tabindex="0" hidden>
+        <div class="stage-head">
+          <div class="stage-kicker">Stage 04 · Layer 3 — Collective power</div>
+          <h2>Public launch — community-run platform</h2>
+          <div class="stage-meta">
+            <span><b>When</b> Month 9+, ongoing</span>
+            <span><b>Where</b> Soft launch (invite-only) opening outward, community-governed</span>
+            <span><b>Scale</b> 1,000+ users at launch → 10,000+ by Year 3</span>
+          </div>
+          <p class="stage-desc">
+            From individual survival to collective ownership: the platform stops being something
+            House of Bijou runs for the community and becomes something the community runs.
+          </p>
+        </div>
+
+        <div class="block journey">
+          <div class="block-head"><span class="marker"></span><h3>User journey</h3><span class="count">7 steps</span></div>
+          <ol class="journey-list">
+            <li data-step="1"><b>Governance opens up</b> — existing users see a governance tab appear with live proposals</li>
+            <li data-step="2"><b>Casts a vote</b> — a gasless vote via Snapshot, weighted by membership or token status</li>
+            <li data-step="3"><b>Joins the town hall</b> — attends, or reads back, the monthly community forum</li>
+            <li data-step="4"><b>New members arrive differently</b> — soft launch, then public, replaces invite-only onboarding as the front door</li>
+            <li data-step="5"><b>Becomes a co-owner</b> — accrues an ownership stake and voting weight as a cooperative member over time</li>
+            <li data-step="6"><b>Their activity serves advocacy</b> — anonymised, aggregated resource-flow data (never individual activity) feeds movement and policy advocacy</li>
+            <li data-step="7"><b>Some go further</b> — a track record of use, plus interest, opens the door to the community developer cohort</li>
+          </ol>
+        </div>
+
+        <div class="block screens">
+          <div class="block-head"><span class="marker"></span><h3>Screens</h3><span class="count">6</span></div>
+          <ul class="item-list">
+            <li><b>Governance dashboard</b> — open proposals, gasless voting</li>
+            <li><b>Community forum / town hall feed</b> — monthly discussion threads</li>
+            <li><b>Resource-flow analytics</b> — aggregated, anonymised view for advocacy (steering-committee access)</li>
+            <li><b>Policy advocacy toolkit</b></li>
+            <li><b>Regional partner directory</b></li>
+            <li><b>Cooperative membership</b> — ownership stake and voting weight</li>
+          </ul>
+        </div>
+
+        <div class="block features">
+          <div class="block-head"><span class="marker"></span><h3>Features</h3><span class="count">4</span></div>
+          <ul class="item-list">
+            <li>On-chain community governance — users hold the majority of decision power</li>
+            <li>Aggregate, anonymised resource-flow data for movement and policy advocacy</li>
+            <li>Regional partnership directory and expansion tracking</li>
+            <li>Cooperative ownership structure</li>
+          </ul>
+        </div>
+
+        <div class="block func">
+          <div class="block-head"><span class="marker"></span><h3>Functionality</h3><span class="count">3</span></div>
+          <ul class="item-list">
+            <li><b>Voting:</b> Snapshot-based gasless voting, weighted by membership/token status</li>
+            <li><b>Analytics:</b> built from opt-in, already-anonymised submissions and tallies — never a copy of anyone's on-device activity; the steering committee sees aggregates only, not raw data</li>
+            <li><b>Governance:</b> charter rules enforced on-chain via smart contract where applicable</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ================= ADDENDUM: TECH & TOOLING ================= -->
+      <section class="stage" id="tooling" role="tabpanel" aria-labelledby="tab-tooling" tabindex="0" hidden>
+        <div class="stage-head">
+          <div class="stage-kicker">Addendum · Tech &amp; Tooling</div>
+          <h2>Build tooling beyond the Rails core</h2>
+          <div class="stage-meta">
+            <span><b>Applies to</b> All four stages</span>
+            <span><b>Source</b> Community D'App Brief §3 (Technical Architecture) + build review</span>
+            <span><b>Added</b> 9 Aug 2026</span>
+          </div>
+          <p class="stage-desc">
+            The core platform is a single Rails application — one codebase, one IDE (RubyMine).
+            Two capability areas sit outside that core and bring their own toolchains: Signal
+            Protocol chat encryption (Rust → WebAssembly) and on-chain money &amp; governance
+            (Solidity and Rust). Nothing here replaces the build-stage plans above; it documents
+            what each one is actually built with.
+          </p>
+        </div>
+
+        <div class="block features tool">
+          <div class="block-head"><span class="marker"></span><h3>A · Core build — Rails app</h3><span class="count">All 4 stages · 1 codebase</span></div>
+          <ul class="item-list">
+            <li><b>Runtime:</b> Ruby 3.3+ (via mise or rbenv), Rails 8, Bundler</li>
+            <li><b>Backend:</b> Rails 8 + PostgreSQL (pgcrypto, AES-256), Action Cable for real-time (panic, presence, push), Active Job + Solid Queue for alert delivery, bcrypt for PIN/password hashing, Solid Cache</li>
+            <li><b>Frontend:</b> Hotwire (Turbo + Stimulus, importmap), Tailwind CSS via tailwindcss-rails, ERB templates — paired fake/real views for stealth mode</li>
+            <li><b>Mobile:</b> Turbo Native shells — iOS (Xcode) and Android (Android Studio) — wrapping the same Rails routes; one codebase → web, Android, iOS</li>
+            <li><b>Testing &amp; quality:</b> Minitest or RSpec, Capybara + Cuprite/Selenium system tests, Brakeman (security), RuboCop + ERB Lint, SimpleCov</li>
+            <li><b>Infrastructure:</b> Fly.io or Render; Africa's Talking SMS (Twilio fallback); TLS 1.3 + certificate pinning; encrypted daily backups; no analytics or tracking</li>
+            <li><b>IDE &amp; workflow:</b> RubyMine (Rails support, PostgreSQL console, run/debug), Git + GitHub, local dev via rails server (docker optional)</li>
+          </ul>
+        </div>
+
+        <div class="block features tool">
+          <div class="block-head"><span class="marker"></span><h3>B · Signal / WASM chat encryption</h3><span class="count">Rust → WebAssembly</span></div>
+          <ul class="item-list">
+            <li><b>Protocol library:</b> libsignal (Signal's Rust implementation) — signalapp/libsignal</li>
+            <li><b>Rust toolchain:</b> rustup with the wasm32-unknown-unknown target; cargo for native tests</li>
+            <li><b>WASM build:</b> wasm-pack + wasm-bindgen to compile the protocol to a browser-ready WebAssembly bundle</li>
+            <li><b>Integration:</b> load the WASM module in the browser and in the Turbo Native webview; expose it through a small Stimulus/JS wrapper</li>
+            <li><b>On-device store:</b> SQLite via SQLCipher; keys held in the platform keychain / Web Crypto API</li>
+            <li><b>Server role:</b> Rails API relays encrypted blobs in memory only (deliver-and-discard); AES-256 via pgcrypto at rest — the server never reads plaintext</li>
+            <li><b>Testing:</b> protocol conformance and interop tests; two-device end-to-end chat tests</li>
+          </ul>
+        </div>
+
+        <div class="block features tool">
+          <div class="block-head"><span class="marker"></span><h3>C · Polygon / Solana smart contracts</h3><span class="count">Beta → Public Launch</span></div>
+          <ul class="item-list">
+            <li><b>Polygon (EVM):</b> Solidity + OpenZeppelin; Foundry (forge/cast) or Hardhat for dev &amp; test; Polygon Amoy testnet; ethers.js / viem for app-side calls; Polygonscan/Blockscout verification; MetaMask</li>
+            <li><b>Solana:</b> Rust programs; Anchor framework; Solana CLI + Solana Playground; @solana/web3.js; Phantom wallet; Solana devnet; anchor test / cargo test-sbf</li>
+            <li><b>Governance:</b> Snapshot for gasless voting (weighted by membership/token status); token economics as ERC-20 (Polygon) or SPL token (Solana)</li>
+            <li><b>Partner-led:</b> co-developed with African Women in Blockchain; open-source, audited before Public Launch</li>
+            <li><b>Sequencing:</b> contracts and voting infrastructure stood up during Beta (Layer 2), switched on for governance at Public Launch (Layer 3)</li>
+          </ul>
+        </div>
+      </section>
+
+  </section>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    Sources: <em>Community D'App Brief</em> (House of Bijou / Tich Labs / Mama Tech, v5.0) and the
+    <em>Concept Note for the Development of an Autonomous Digital Application to Support Sustainable
+    Community Building by Black African Queer Females</em> (House of Bijou Community Centre). Where
+    the two disagreed — data storage, disguise options, trusted-contact count — this document follows
+    the Concept Note. Screens remain this document's synthesis of the described flows; features and
+    functionality are drawn directly from both source texts. The Tooling addendum is compiled from the
+    Brief's §3 Technical Architecture and the build review (9 Aug 2026).
+  </div>
+</footer>
+
+<script>
+(function () {
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab-btn'));
+  var panels = Array.prototype.slice.call(document.querySelectorAll('.stage[role="tabpanel"]'));
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.stage-card'));
+  var viewLanding = document.getElementById('view-landing');
+  var viewDetail = document.getElementById('view-detail');
+  var backBtn = document.getElementById('back-to-landing');
+
+  function isStageId(id) {
+    return panels.some(function (p) { return p.id === id; });
+  }
+
+  function activate(id, focusTab, updateHash) {
+    if (!isStageId(id)) return;
+    tabs.forEach(function (t) {
+      var selected = t.getAttribute('data-target') === id;
+      t.setAttribute('aria-selected', selected ? 'true' : 'false');
+      t.tabIndex = selected ? 0 : -1;
+      if (selected && focusTab) t.focus();
+    });
+    panels.forEach(function (p) { p.hidden = p.id !== id; });
+    if (updateHash && history.replaceState) history.replaceState(null, '', '#' + id);
+  }
+
+  function showDetail(id, focusTab) {
+    activate(id, !!focusTab, true);
+    viewLanding.hidden = true;
+    viewDetail.hidden = false;
+    window.scrollTo(0, 0);
+  }
+
+  function showLanding() {
+    viewDetail.hidden = true;
+    viewLanding.hidden = false;
+    if (history.replaceState) history.replaceState(null, '', location.pathname + location.search);
+    window.scrollTo(0, 0);
+  }
+
+  cards.forEach(function (card) {
+    card.addEventListener('click', function () {
+      showDetail(card.getAttribute('data-target'), false);
+    });
+  });
+
+  backBtn.addEventListener('click', showLanding);
+  backBtn.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') showLanding();
+  });
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      activate(tab.getAttribute('data-target'), false, true);
+    });
+    tab.addEventListener('keydown', function (e) {
+      var i = tabs.indexOf(tab);
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        activate(tabs[(i + 1) % tabs.length].getAttribute('data-target'), true, true);
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        activate(tabs[(i - 1 + tabs.length) % tabs.length].getAttribute('data-target'), true, true);
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        activate(tabs[0].getAttribute('data-target'), true, true);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        activate(tabs[tabs.length - 1].getAttribute('data-target'), true, true);
+      } else if (e.key === 'Escape') {
+        showLanding();
+      }
+    });
+  });
+
+  var initial = (location.hash || '').replace('#', '');
+  if (initial && isStageId(initial)) {
+    showDetail(initial, false);
+  } else {
+    activate('mvp', false, false);
+  }
+})();
+</script>
+
+</body>
+</html>
