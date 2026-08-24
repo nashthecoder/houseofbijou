@@ -1,7 +1,8 @@
 <div data-controller="calculator" class="w-full max-w-[360px] rounded-[28px] border border-slate-200 bg-white p-4 shadow-2xl">
   <label class="sr-only" for="calculator-display">Calculator display</label>
   <input id="calculator-display" data-calculator-target="display"
-         class="calc-display w-full h-20 rounded-2xl text-right px-5 text-4xl font-semibold mb-4"
+         data-action="click->calculator#tapTemperature"
+         class="calc-display w-full h-20 rounded-2xl text-right px-5 text-4xl font-semibold mb-4 cursor-default select-none"
          value="0" readonly aria-live="polite">
 
   <section class="grid grid-cols-4 gap-2.5" aria-label="Calculator keypad">
@@ -29,4 +30,28 @@
     <button class="calc-key text-xl" type="button" data-key="." data-action="calculator#press">.</button>
     <button class="calc-key calc-op text-xl" type="button" data-key="=" data-action="calculator#press">=</button>
   </section>
+
+  <div data-calculator-target="pad" class="screen-hidden fixed inset-x-0 bottom-0 z-30 mx-auto max-w-[480px] rounded-t-3xl bg-slate-900/95 backdrop-blur px-6 pt-6 pb-8 shadow-2xl">
+    <p class="text-center text-slate-300 text-sm">Enter passcode</p>
+    <div class="flex justify-center gap-3 mt-4" aria-hidden="true">
+      <span class="w-2.5 h-2.5 rounded-full bg-slate-300 transition-colors" data-dot></span>
+      <span class="w-2.5 h-2.5 rounded-full bg-slate-300 transition-colors" data-dot></span>
+      <span class="w-2.5 h-2.5 rounded-full bg-slate-300 transition-colors" data-dot></span>
+      <span class="w-2.5 h-2.5 rounded-full bg-slate-300 transition-colors" data-dot></span>
+    </div>
+    <div class="grid grid-cols-3 gap-3 mt-5">
+      <% ["1","2","3","4","5","6","7","8","9","","0","⌫"].each do |d| %>
+        <% if d == "" %>
+          <span></span>
+        <% elsif d == "⌫" %>
+          <button type="button" data-action="calculator#clearCode"
+                  class="min-h-[56px] rounded-full bg-white/10 text-slate-200 text-xl active:bg-white/20">⌫</button>
+        <% else %>
+          <button type="button" data-digit="<%= d %>" data-action="calculator#digit"
+                  class="min-h-[56px] rounded-full bg-white/10 text-slate-50 text-2xl font-light active:bg-white/25"><%= d %></button>
+        <% end %>
+      <% end %>
+    </div>
+    <p class="sr-only">Passcode entry</p>
+  </div>
 </div>
