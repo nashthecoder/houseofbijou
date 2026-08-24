@@ -1,0 +1,264 @@
+@import "tailwindcss";
+
+/* House of Bijou — design tokens & components.
+   Palette drawn from the Bijou logo: soft sage field, black artwork, warm gold accent. */
+
+:root {
+  --ink: #262019;        /* logo black, warmed for text */
+  --primary: #2e2818;    /* deep espresso — buttons, strong surfaces */
+  --accent: #a5793a;     /* logo gold, darkened for text/fills */
+  --gold: #c29765;       /* logo gold as-is */
+  --cream: #fbfaf2;      /* warm off-white */
+  --panel-a: #f3f5e3;    /* sage panel gradient start */
+  --panel-b: #e7edcf;    /* logo sage, softened */
+  --line: #dde3c8;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--cream);
+}
+
+button, input, select, textarea { font: inherit; }
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+}
+
+.font-display { font-family: var(--font-display); }
+
+/* ---------- Shell ---------- */
+
+.app-shell { width: 100%; min-height: 100dvh; overflow-x: hidden; }
+
+.mobile-frame {
+  width: 100%;
+  max-width: 480px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  position: relative;
+}
+
+.real-screen { min-height: 100dvh; padding-bottom: 96px; }
+
+@media (min-width: 600px) {
+  .mobile-frame {
+    box-shadow: 0 0 0 1px rgba(46, 40, 24, .10), 0 24px 70px rgba(46, 40, 24, .14);
+  }
+}
+
+.screen-hidden { display: none !important; }
+
+.brand-logo {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+/* ---------- Components ---------- */
+
+.canva-text { color: inherit; }
+
+.canva-panel {
+  background: linear-gradient(160deg, var(--panel-a) 0%, var(--panel-b) 100%);
+  border: 1px solid var(--line);
+}
+
+.canva-card {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  box-shadow: 0 1px 2px rgba(38, 32, 25, .05);
+}
+
+.canva-header {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  box-shadow: 0 8px 22px rgba(38, 32, 25, .07);
+}
+
+.canva-button {
+  background: var(--primary);
+  color: var(--cream);
+  box-shadow: 0 6px 16px rgba(46, 40, 24, .28);
+  transition: transform .15s ease, filter .15s ease;
+}
+.canva-button:hover { filter: brightness(1.35); }
+.canva-button:active { transform: translateY(1px); }
+.canva-button:disabled { opacity: .55; cursor: default; transform: none; }
+
+.canva-tag {
+  background: #e9efd4;
+  color: #55622e;
+  border: 1px solid #cdd8a6;
+}
+
+.canva-banner {
+  background: var(--primary);
+  color: var(--cream);
+  box-shadow: 0 10px 24px rgba(46, 40, 24, .25);
+}
+
+.tile { transition: transform .18s ease, box-shadow .18s ease; }
+.tile:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(46, 40, 24, .12); }
+
+/* ---------- Calculator disguise ---------- */
+
+.disguise {
+  background: #eff1f3;
+  min-height: 100dvh;
+  color: #20252a;
+}
+
+.calc-display {
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1px #dce0e3;
+  letter-spacing: .04em;
+}
+
+.calc-key {
+  min-height: 56px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 2px 0 #cfd4d8;
+  transition: transform .12s, background .12s;
+}
+.calc-key:active { transform: translateY(2px); box-shadow: none; }
+
+.calc-op {
+  background: var(--skin-accent, #5d7485);
+  color: white;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, .25);
+}
+
+/* ---------- Tile game disguise ---------- */
+
+.tg-tile {
+  background: #fff;
+  box-shadow: 0 3px 0 #d8dce0;
+  transition: transform .15s ease;
+}
+.tg-tile .tg-face { opacity: 0; transition: opacity .15s ease; }
+.tg-tile.is-flipped .tg-face,
+.tg-tile.is-matched .tg-face { opacity: 1; }
+.tg-tile.is-flipped { transform: rotateY(90deg); }
+.tg-tile.is-matched {
+  background: var(--skin-accent, #bfe3c8);
+  color: white;
+  box-shadow: none;
+}
+
+@keyframes dissolve {
+  0% { opacity: 1; filter: blur(0); }
+  100% { opacity: 0; filter: blur(8px); }
+}
+.disguise-dissolve { animation: dissolve .35s ease forwards; }
+
+.shake { animation: shake .3s ease; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* ---------- Circle orbit ---------- */
+
+.orbit {
+  width: 276px;
+  height: 276px;
+  margin: 6px auto 18px;
+  position: relative;
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  background: radial-gradient(circle, var(--cream) 0 27%, var(--panel-a) 28% 30%, transparent 31%);
+}
+.orbit::before, .orbit::after {
+  content: "";
+  position: absolute;
+  inset: 34px;
+  border: 1px dashed var(--gold);
+  border-radius: 999px;
+  opacity: .7;
+}
+
+.person {
+  position: absolute;
+  z-index: 2;
+  width: 60px;
+  height: 60px;
+  border: 4px solid var(--cream);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  box-shadow: 0 5px 14px rgba(38, 32, 25, .16);
+}
+.person.self { width: 86px; height: 86px; left: 95px; top: 95px; background: var(--primary); color: var(--cream); }
+.person.one { left: 108px; top: -7px; background: #c29765; }
+.person.two { right: -7px; top: 108px; background: #a9bd7e; }
+.person.three { left: 108px; bottom: -7px; background: #8a9a5b; }
+.person.four { left: -7px; top: 108px; background: #d9b98a; }
+
+/* ---------- Nav / toast / motion ---------- */
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  max-width: 480px;
+  z-index: 20;
+  border-top: 1px solid var(--line);
+  background: rgba(251, 250, 242, .97);
+  backdrop-filter: blur(14px);
+}
+
+.nav-item { color: #6e6a58; min-height: 62px; }
+.nav-item.active-nav { color: var(--primary); }
+
+.toast {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 88px;
+  z-index: 30;
+  border-radius: 16px;
+  padding: 12px 16px;
+  box-shadow: 0 12px 28px rgba(38, 32, 25, .18);
+  animation: lift .25s ease both;
+}
+
+.pulse { animation: pulse 1.7s infinite; }
+
+@keyframes lift {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.view-enter { animation: lift .32s ease both; }
+
+/* ---------- High contrast ---------- */
+
+.high-contrast {
+  --ink: #14100a;
+  --primary: #1c1608;
+  --accent: #7a5216;
+  --gold: #a5793a;
+  --cream: #ffffff;
+  --panel-a: #fff8ea;
+  --panel-b: #f2ecd8;
+  --line: #8a7a54;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

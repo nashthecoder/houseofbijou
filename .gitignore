@@ -1,0 +1,8 @@
+.bundle
+/.ruby-lsp
+/log/*
+/tmp/*
+/storage/*
+/config/master.key
+/.kamal/secrets
+.DS_Store

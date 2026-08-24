@@ -1,0 +1,25 @@
+<div class="app-shell">
+  <div class="mobile-frame flex flex-col justify-center px-6 py-10 min-h-screen bg-[#fbfaf2]">
+    <div class="flex flex-col items-center mb-6">
+      <%= image_tag "bijou-logo.png", class: "brand-logo !w-16 !h-16 !rounded-2xl", alt: "House of Bijou logo" %>
+    </div>
+    <div class="rounded-[28px] canva-panel p-6 view-enter">
+      <p class="uppercase tracking-[.14em] text-xs font-bold text-[#a5793a] mb-3">Before you come in</p>
+      <h1 class="font-display text-3xl leading-tight text-[#262019]">Our values agreement</h1>
+      <p class="mt-4 leading-relaxed text-[#4a4636]">
+        House of Bijou is held together by how we treat each other. Everything inside
+        depends on you agreeing to these, so they are not optional:
+      </p>
+      <ul class="mt-4 space-y-3 leading-relaxed text-[#4a4636]">
+        <li><strong class="text-[#262019]">Dignity first.</strong> Everyone here is someone's chosen family.</li>
+        <li><strong class="text-[#262019]">Protect each other.</strong> Never share another member's name, face or location outside the circle.</li>
+        <li><strong class="text-[#262019]">No outing. Ever.</strong> What is shared here stays here.</li>
+        <li><strong class="text-[#262019]">Give as you can.</strong> Aid flows both ways when it can.</li>
+      </ul>
+      <%= button_to "I agree — let me in", values_path,
+            class: "canva-button w-full rounded-2xl min-h-[54px] mt-7 font-semibold",
+            form: { class: "contents" } %>
+    </div>
+    <p class="text-center text-sm text-[#8f8a70] mt-6">You can re-read this any time from Settings.</p>
+  </div>
+</div>

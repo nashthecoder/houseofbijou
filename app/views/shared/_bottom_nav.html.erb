@@ -1,0 +1,9 @@
+<nav class="bottom-nav grid grid-cols-5" aria-label="Main navigation">
+  <% nav_items.each do |item| %>
+    <%= link_to item[:path], class: "nav-item flex flex-col items-center justify-center gap-1 #{'active-nav' if item[:active]}",
+          aria: { current: ("page" if item[:active]) } do %>
+      <%= icon item[:icon], size: 18 %>
+      <span class="text-xs"><%= item[:label] %></span>
+    <% end %>
+  <% end %>
+</nav>

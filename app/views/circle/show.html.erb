@@ -1,0 +1,76 @@
+<%= render "shared/app_header" %>
+
+<div class="px-5">
+  <h2 class="font-display text-3xl mt-3">Trusted circle</h2>
+  <p class="mt-2 leading-relaxed text-[#4a4636]">
+    The people alerted when you need them, and the ones who check in on you — no central watcher.
+  </p>
+
+  <div class="orbit" role="img" aria-label="Your trusted circle around you">
+    <div class="person self">You</div>
+    <% @contacts.limit(4).each_with_index do |contact, i| %>
+      <div class="person <%= %w[one two three four][i] %>" style="background: <%= contact.color %>"
+           title="<%= contact.name %>"><%= contact.name.first.upcase %></div>
+    <% end %>
+  </div>
+
+  <section class="canva-panel rounded-2xl p-4">
+    <div class="flex justify-between items-center">
+      <span class="font-semibold">Mutual check-in</span>
+      <span class="canva-tag text-sm px-3 py-1 rounded-full">On track</span>
+    </div>
+    <p class="text-sm mt-2 text-[#4a4636]">
+      Last ping from <%= Contact.order(:position).first&.name || "your circle" %> today at 9:14.
+      You're next in the rotation.
+    </p>
+  </section>
+
+  <% if @contacts.count > 4 %>
+    <section class="canva-card rounded-2xl p-4 mt-3">
+      <h3 class="font-semibold">Also in your circle</h3>
+      <ul class="mt-3 space-y-2">
+        <% @contacts.offset(4).each do |contact| %>
+          <li class="flex items-center gap-3">
+            <span class="w-9 h-9 rounded-full flex items-center justify-center font-bold"
+                  style="background: <%= contact.color %>"><%= contact.name.first.upcase %></span>
+            <span class="text-sm"><strong><%= contact.name %></strong> · <%= contact.relationship %></span>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <details class="mt-4 canva-card rounded-xl p-4">
+    <summary class="canva-button inline-flex items-center justify-center w-full min-h-[50px] rounded-xl font-semibold cursor-pointer list-none">
+      <%= icon "plus", size: 18, css_class: "inline mr-2" %> Add someone you trust
+    </summary>
+    <%= form_with model: @contact, url: circle_contacts_path, class: "mt-4 space-y-3" do |form| %>
+      <div>
+        <label for="contact_name" class="font-semibold block mb-1">Name or pseudonym</label>
+        <%= form.text_field :name, id: "contact_name", required: true,
+              class: "w-full rounded-lg border border-[#d3d8bc] p-3 bg-white",
+              placeholder: "What do you call them?" %>
+      </div>
+      <div>
+        <label for="contact_relationship" class="font-semibold block mb-1">How you know them</label>
+        <%= form.text_field :relationship, id: "contact_relationship",
+              class: "w-full rounded-lg border border-[#d3d8bc] p-3 bg-white",
+              placeholder: "Chosen family, neighbour…" %>
+      </div>
+      <div>
+        <label for="contact_phone" class="font-semibold block mb-1">
+          Phone for SMS fallback <span class="font-normal text-[#7d7862]">(optional)</span>
+        </label>
+        <%= form.telephone_field :phone, id: "contact_phone",
+              class: "w-full rounded-lg border border-[#d3d8bc] p-3 bg-white",
+              placeholder: "+254 7…" %>
+      </div>
+      <%= form.submit "Add to circle",
+            class: "canva-button w-full min-h-[46px] rounded-xl font-semibold" %>
+    <% end %>
+  </details>
+
+  <p class="text-sm mt-4 text-[#7d7862]">Three to five people is the sweet spot. They never see each other's details.</p>
+</div>
+
+<%= render "shared/bottom_nav" %>

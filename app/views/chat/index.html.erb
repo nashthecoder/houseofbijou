@@ -1,0 +1,31 @@
+<%= render "shared/app_header" %>
+
+<div class="px-5">
+  <h2 class="font-display text-3xl mt-3">Chats</h2>
+  <p class="mt-2 text-[#4a4636] flex items-center gap-1.5 text-sm">
+    <%= icon "lock-keyhole", size: 14 %>
+    Every conversation is end-to-end encrypted and stays on your devices.
+  </p>
+
+  <div class="mt-4 space-y-3" aria-label="Conversation list">
+    <% @conversations.each do |conversation| %>
+      <%= link_to chat_thread_path(conversation), class: "canva-card rounded-2xl p-4 flex items-center gap-3 tile" do %>
+        <span class="w-11 h-11 rounded-full flex items-center justify-center font-bold shrink-0"
+              style="background: <%= conversation.color %>" aria-hidden="true"><%= conversation.initial %></span>
+        <span class="flex-1 min-w-0">
+          <span class="flex items-baseline justify-between gap-2">
+            <span class="font-semibold truncate"><%= conversation.title %></span>
+            <% if conversation.last_message %>
+              <span class="text-xs text-[#8f8a70] shrink-0"><%= time_ago_in_words(conversation.last_message.created_at) %> ago</span>
+            <% end %>
+          </span>
+          <span class="block text-sm text-[#7d7862] truncate mt-0.5">
+            <%= conversation.last_message ? conversation.last_message.body : "No messages yet — say hello." %>
+          </span>
+        </span>
+      <% end %>
+    <% end %>
+  </div>
+</div>
+
+<%= render "shared/bottom_nav" %>

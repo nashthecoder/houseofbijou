@@ -1,0 +1,32 @@
+<div data-controller="calculator" class="w-full max-w-[360px] rounded-[28px] border border-slate-200 bg-white p-4 shadow-2xl">
+  <label class="sr-only" for="calculator-display">Calculator display</label>
+  <input id="calculator-display" data-calculator-target="display"
+         class="calc-display w-full h-20 rounded-2xl text-right px-5 text-4xl font-semibold mb-4"
+         value="0" readonly aria-live="polite">
+
+  <section class="grid grid-cols-4 gap-2.5" aria-label="Calculator keypad">
+    <button class="calc-key text-xl" type="button" data-key="clear" data-action="calculator#press">AC</button>
+    <button class="calc-key text-xl" type="button" data-key="sign" data-action="calculator#press">±</button>
+    <button class="calc-key text-xl" type="button" data-key="percent" data-action="calculator#press">%</button>
+    <button class="calc-key calc-op text-xl" type="button" data-key="/" data-action="calculator#press">÷</button>
+
+    <button class="calc-key text-xl" type="button" data-key="7" data-action="calculator#press">7</button>
+    <button class="calc-key text-xl" type="button" data-key="8" data-action="calculator#press">8</button>
+    <button class="calc-key text-xl" type="button" data-key="9" data-action="calculator#press">9</button>
+    <button class="calc-key calc-op text-xl" type="button" data-key="*" data-action="calculator#press">×</button>
+
+    <button class="calc-key text-xl" type="button" data-key="4" data-action="calculator#press">4</button>
+    <button class="calc-key text-xl" type="button" data-key="5" data-action="calculator#press">5</button>
+    <button class="calc-key text-xl" type="button" data-key="6" data-action="calculator#press">6</button>
+    <button class="calc-key calc-op text-xl" type="button" data-key="-" data-action="calculator#press">−</button>
+
+    <button class="calc-key text-xl" type="button" data-key="1" data-action="calculator#press">1</button>
+    <button class="calc-key text-xl" type="button" data-key="2" data-action="calculator#press">2</button>
+    <button class="calc-key text-xl" type="button" data-key="3" data-action="calculator#press">3</button>
+    <button class="calc-key calc-op text-xl" type="button" data-key="+" data-action="calculator#press">+</button>
+
+    <button class="calc-key col-span-2 text-xl" type="button" data-key="0" data-action="calculator#press">0</button>
+    <button class="calc-key text-xl" type="button" data-key="." data-action="calculator#press">.</button>
+    <button class="calc-key calc-op text-xl" type="button" data-key="=" data-action="calculator#press">=</button>
+  </section>
+</div>

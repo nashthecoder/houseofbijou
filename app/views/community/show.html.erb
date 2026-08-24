@@ -1,0 +1,75 @@
+<%= render "shared/app_header" %>
+
+<div class="px-5">
+  <h2 class="font-display text-3xl mt-3">Neighbourhood</h2>
+  <p class="mt-2 text-[#4a4636]">
+    Wider than your circle, still ours. Stories, gatherings and the decisions we make together.
+  </p>
+
+  <details class="mt-4" <%= "open" if flash[:toast]&.include?("story") %>>
+    <summary class="canva-button rounded-xl min-h-[44px] px-4 inline-flex items-center cursor-pointer list-none font-semibold">
+      <%= icon "plus", size: 16, css_class: "mr-1" %> Share a story
+    </summary>
+    <div class="rounded-2xl p-4 bg-[#f3f6e3] border border-[#d9e0bf] shadow-xl mt-2">
+      <%= form_with model: Story.new, url: community_stories_path, aria: { label: "Share a chosen family story" } do |form| %>
+        <%= form.label :body, "Your story — as #{settings.pseudonym}", class: "font-semibold block mb-1" %>
+        <%= form.text_area :body, id: "story_body", rows: 4, required: true,
+              placeholder: "Family, healing, chosen family… told your way.",
+              class: "w-full rounded-lg border border-[#d3d8bc] p-3 bg-white leading-relaxed" %>
+        <label for="story_visibility" class="text-sm font-semibold block mt-3">Who can read it</label>
+        <%= form.select :visibility, [["Trusted circle only", "circle"]], {}, id: "story_visibility",
+              class: "w-full mt-1 border border-[#d3d8bc] bg-white rounded-xl p-3 text-sm" %>
+        <p class="text-sm mt-3 text-[#4a4636]">
+          Shared under your pseudonym. Never public, never indexed, never stored outside the circle.
+        </p>
+        <%= form.submit "Share with my circle",
+              class: "canva-button mt-3 w-full min-h-[46px] rounded-xl font-semibold" %>
+      <% end %>
+    </div>
+  </details>
+
+  <h3 class="font-semibold uppercase tracking-[.14em] text-xs text-[#8f8a70] mt-6">Chosen family stories</h3>
+  <div class="space-y-3 mt-3" aria-label="Stories feed">
+    <% @stories.each do |story| %>
+      <article class="canva-card rounded-2xl p-4 view-enter">
+        <span class="canva-tag px-2 py-1 rounded text-xs">Chosen family</span>
+        <p class="text-sm mt-3 leading-relaxed text-[#4a4636]"><%= story.body %></p>
+        <p class="text-xs mt-3 text-[#8f8a70]">
+          shared by <strong><%= story.author %></strong> under their pseudonym ·
+          <%= time_ago_in_words(story.created_at) %> ago · circle only
+        </p>
+      </article>
+    <% end %>
+    <% if @stories.empty? %>
+      <p class="canva-panel rounded-2xl p-4 text-sm text-[#4a4636]">No stories yet — yours could be the first.</p>
+    <% end %>
+  </div>
+
+  <article class="canva-card rounded-2xl p-4 mt-5">
+    <p class="uppercase tracking-[.12em] text-xs font-bold text-[#a5793a]">This week</p>
+    <h3 class="font-semibold mt-2">Healing circle — Thursday, 6pm</h3>
+    <p class="text-sm mt-1 text-[#4a4636]">House of Bijou centre, back room. Tea provided, stories optional.</p>
+  </article>
+
+  <% if @vote.persisted? %>
+    <article class="canva-panel rounded-2xl p-4 mt-3 flex gap-4 items-center mb-2">
+      <%= button_to community_support_path(@vote), method: :post,
+            class: "canva-button rounded-xl w-12 h-12 flex items-center justify-center shrink-0",
+            form: { class: "contents" },
+            aria: { label: "Support this proposal" } do %>
+        <%= icon "arrow-up", size: 18 %>
+      <% end %>
+      <div>
+        <h3 class="font-semibold"><%= @vote.title %></h3>
+        <p id="vote-count" class="text-sm mt-1"><%= pluralize(@vote.supports_count, "neighbour") %> support this</p>
+      </div>
+    </article>
+  <% else %>
+    <article class="canva-panel rounded-2xl p-4 mt-3 mb-2">
+      <h3 class="font-semibold">No open proposals right now</h3>
+      <p class="text-sm mt-1 text-[#4a4636]">When the community has a decision to make, it will appear here.</p>
+    </article>
+  <% end %>
+</div>
+
+<%= render "shared/bottom_nav" %>

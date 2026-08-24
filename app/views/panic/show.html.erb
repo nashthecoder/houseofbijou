@@ -1,0 +1,51 @@
+<%= render "shared/app_header" %>
+
+<div class="px-5" data-controller="panic">
+  <section class="canva-panel rounded-[28px] p-6 mt-2 text-center view-enter">
+    <span class="w-14 h-14 rounded-full bg-[#efe6cd] mx-auto flex items-center justify-center text-2xl" aria-hidden="true">◌</span>
+    <h2 class="font-display text-3xl mt-5">Panic alert</h2>
+
+    <% if @recent_alert %>
+      <div id="panic-notified" class="mt-5" aria-live="polite">
+        <div class="pulse w-12 h-12 bg-[#d9b98a] rounded-full mx-auto"></div>
+        <p class="font-semibold mt-4">Your circle knows.</p>
+        <p class="text-sm mt-1 text-[#4a4636]">
+          <%= pluralize(@recent_alert.contacts_notified, "trusted contact") %> were alerted
+          <%= time_ago_in_words(@recent_alert.created_at) %> ago via app and SMS.
+        </p>
+      </div>
+      <p class="text-sm mt-5 text-[#7d7862]">Alerts pass through a blind relay. Nothing is stored — not even for a second.</p>
+    <% else %>
+      <p class="leading-relaxed mt-3 text-[#4a4636]">
+        One tap sends your live location and a short message to your trusted circle —
+        by app, with SMS fallback when data is off.
+      </p>
+
+      <div data-panic-target="armed" class="mt-7">
+        <button type="button" data-action="panic#arm"
+                class="canva-button w-full rounded-2xl min-h-[108px] text-xl font-bold">
+          Send panic alert now
+        </button>
+      </div>
+
+      <div data-panic-target="confirming" class="screen-hidden mt-7 rounded-2xl bg-white/70 border border-[#e3cda0] p-4" aria-live="assertive">
+        <p class="font-semibold">This will alert your whole circle</p>
+        <p class="text-sm mt-1 text-[#4a4636]">Your location goes to every trusted contact. You have a moment to change your mind.</p>
+        <input type="hidden" name="latitude" data-panic-target="latitude">
+        <input type="hidden" name="longitude" data-panic-target="longitude">
+        <p data-panic-target="locationStatus" class="text-sm mt-2 text-[#7d7862]">Locking your location…</p>
+        <div class="grid grid-cols-2 gap-3 mt-4">
+          <button type="button" data-action="panic#disarm"
+                  class="rounded-xl min-h-[48px] border border-[#d3d8bc] bg-white font-semibold">Cancel</button>
+          <%= button_to "Send now", panic_path,
+                class: "canva-button rounded-xl min-h-[48px] font-semibold",
+                form: { class: "contents", data: { turbo: false } } %>
+        </div>
+      </div>
+
+      <p class="text-sm mt-5 text-[#7d7862]">Shake-to-trigger and volume-key hold arrive in a later build.</p>
+    <% end %>
+  </section>
+</div>
+
+<%= render "shared/bottom_nav" %>

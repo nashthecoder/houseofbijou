@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>House of Bijou | Build Review</title>
+  <style>
+    :root { --bg:#faf6f4; --surface:#fff; --ink:#251a1e; --muted:#71595e; --line:#e6d8d5; --accent:#8c3049; --gold:#a6641c; --ok:#4c7657; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    .wrap { max-width:1120px; margin:auto; padding:48px 24px 80px; }
+    header { border-bottom:1px solid var(--line); padding-bottom:32px; }
+    .eyebrow, .label { color:var(--gold); font-size:.75rem; font-weight:700; letter-spacing:.11em; text-transform:uppercase; }
+    h1, h2 { font-family:Georgia,"Times New Roman",serif; line-height:1.1; }
+    h1 { max-width:14ch; font-size:clamp(2.4rem,6vw,4.8rem); margin:14px 0; }
+    h2 { font-size:2rem; margin:0 0 18px; }
+    p { color:var(--muted); max-width:66ch; }
+    .stats, .stages, .shots { display:grid; gap:14px; }
+    .stats { grid-template-columns:repeat(4,1fr); margin-top:28px; }
+    .stat, .stage, figure { background:var(--surface); border:1px solid var(--line); border-radius:8px; }
+    .stat { padding:18px; }
+    .stat strong { display:block; color:var(--accent); font:2rem Georgia,serif; }
+    section { padding-top:48px; }
+    .stages { grid-template-columns:repeat(4,1fr); }
+    .stage { padding:20px; }
+    .stage h3 { margin:8px 0 4px; font:1.35rem Georgia,serif; }
+    .stage p { font-size:.9rem; margin:8px 0 18px; }
+    .meter { height:7px; background:#eadfdb; border-radius:99px; overflow:hidden; }
+    .meter span { display:block; height:100%; background:var(--ok); }
+    .stage small { display:block; color:var(--muted); margin-top:8px; }
+    .checklist { border-top:1px solid var(--line); }
+    .check { display:grid; grid-template-columns:24px 1fr auto; gap:12px; align-items:start; padding:15px 0; border-bottom:1px solid var(--line); }
+    .check input { accent-color:var(--ok); width:18px; height:18px; }
+    .check b { font-weight:600; }
+    .status { color:var(--muted); font-size:.82rem; white-space:nowrap; }
+    .status.done { color:var(--ok); font-weight:700; }
+    .shots { grid-template-columns:repeat(2,1fr); }
+    figure { margin:0; overflow:hidden; }
+    figure img { display:block; width:100%; height:auto; max-height:720px; object-fit:contain; background:#f0f1f3; }
+    figcaption { padding:12px 14px; font-weight:600; }
+    figcaption small { display:block; color:var(--muted); font-weight:400; }
+    a { color:var(--accent); }
+    @media (max-width:760px) { .wrap { padding-top:30px; } .stats,.stages { grid-template-columns:repeat(2,1fr); } .shots { grid-template-columns:1fr 1fr; } .check { grid-template-columns:24px 1fr; } .status { grid-column:2; } }
+    @media (max-width:440px) { .stats,.stages,.shots { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="eyebrow">House of Bijou · internal review</div>
+      <h1>Build review, in the open.</h1>
+      <p>A mobile walkthrough of the Rails MVP against the four-stage brief. This page records what is implemented today and keeps future layers visible without disguising their status.</p>
+      <div class="stats">
+        <div class="stat"><strong>10</strong><span>captured MVP views</span></div>
+        <div class="stat"><strong>16</strong><span>MVP screens in brief</span></div>
+        <div class="stat"><strong>31</strong><span>screens across roadmap</span></div>
+        <div class="stat"><strong>19</strong><span>tests passing</span></div>
+      </div>
+    </header>
+
+    <section>
+      <div class="eyebrow">Progress against brief</div>
+      <h2>Four stages, one honest status.</h2>
+      <div class="stages">
+        <article class="stage"><span class="label">01 · Weeks 9–16</span><h3>MVP</h3><p>Stealth access, dashboard, circle, panic, chat, aid, stories, settings and coordinator surfaces are present.</p><div class="meter"><span style="width:100%"></span></div><small>Implemented · internal test</small></article>
+        <article class="stage"><span class="label">02 · Month 4</span><h3>Alpha</h3><p>Feedback, 2FA and biometric screens remain planned additions to the live safety layer.</p><div class="meter"><span style="width:15%"></span></div><small>Planned · closed beta</small></article>
+        <article class="stage"><span class="label">03 · Months 5–8</span><h3>Beta</h3><p>Wallet, transfers, ledger, income guidance and USSD are roadmap work.</p><div class="meter"><span style="width:0%"></span></div><small>Planned · economic resilience</small></article>
+        <article class="stage"><span class="label">04 · Month 9+</span><h3>Public launch</h3><p>Governance, advocacy, partner directory and cooperative ownership are roadmap work.</p><div class="meter"><span style="width:0%"></span></div><small>Planned · community-run</small></article>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow">MVP checklist</div>
+      <h2>What to review now</h2>
+      <div class="checklist">
+        <label class="check"><input type="checkbox" checked><span><b>Decoy launcher and unlock</b><br><small>Calculator frame verified after Tailwind rebuild.</small></span><span class="status done">Done</span></label>
+        <label class="check"><input type="checkbox" checked><span><b>Real dashboard and one-tap hide</b><br><small>Home hub links panic, circle, chat, aid and stories.</small></span><span class="status done">Done</span></label>
+        <label class="check"><input type="checkbox" checked><span><b>Trusted circle, chat and mutual aid</b><br><small>List, detail and creation flows are available in the Rails app.</small></span><span class="status done">Done</span></label>
+        <label class="check"><input type="checkbox" checked><span><b>Community and coordinator surfaces</b><br><small>Stories, votes, moderation and aggregate follow-up views are available.</small></span><span class="status done">Done</span></label>
+        <label class="check"><input type="checkbox"><span><b>Alpha hardening</b><br><small>Feedback/report, 2FA and biometric unlock.</small></span><span class="status">Next</span></label>
+        <label class="check"><input type="checkbox"><span><b>Beta and public-launch layers</b><br><small>Wallet, USSD, governance and cooperative ownership.</small></span><span class="status">Roadmap</span></label>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow">Mobile walkthrough</div>
+      <h2>Captured screens</h2>
+      <div class="shots">
+        <figure><img src="screens/calculator.png" alt="Calculator decoy"><figcaption>Calculator decoy<small>Stealth launcher</small></figcaption></figure>
+        <figure><img src="screens/dashboard.png" alt="House of Bijou dashboard"><figcaption>Dashboard<small>Real home hub</small></figcaption></figure>
+        <figure><img src="screens/circle.png" alt="Trusted circle"><figcaption>Trusted circle<small>Contacts manager</small></figcaption></figure>
+        <figure><img src="screens/chat.png" alt="Encrypted chat list"><figcaption>Chat<small>Encrypted conversations</small></figcaption></figure>
+        <figure><img src="screens/aid.png" alt="Mutual aid feed"><figcaption>Mutual aid<small>Requests and pledges</small></figcaption></figure>
+        <figure><img src="screens/community.png" alt="Community feed"><figcaption>Community<small>Stories and votes</small></figcaption></figure>
+        <figure><img src="screens/settings.png" alt="Settings"><figcaption>Settings<small>Accessibility and disguise</small></figcaption></figure>
+        <figure><img src="screens/panic.png" alt="Panic alert"><figcaption>Panic alert<small>Crisis confirmation</small></figcaption></figure>
+        <figure><img src="screens/coordinator.png" alt="Coordinator dashboard"><figcaption>Coordinator<small>Queues and aggregates</small></figcaption></figure>
+        <figure><img src="screens/onboarding.png" alt="Onboarding identity setup"><figcaption>Onboarding<small>Identity and avatar setup</small></figcaption></figure>
+      </div>
+    </section>
+    <p><a href="/">Open the app</a> · Source brief: <a href="/House%20of%20Bijou%20%E2%80%94%20Build%20Stage%20Spec.html">build stage specification</a></p>
+  </div>
+</body>
+</html>

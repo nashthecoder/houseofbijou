@@ -1,0 +1,50 @@
+<%= render "shared/app_header" %>
+
+<div class="px-5">
+  <section class="canva-panel rounded-[28px] p-5 mt-2 overflow-hidden relative">
+    <div class="relative z-10 max-w-[68%]">
+      <p class="uppercase tracking-[.14em] text-xs font-bold text-[#a5793a] mb-2">Welcome home</p>
+      <h2 class="font-display text-3xl leading-tight">You're among friends.</h2>
+      <p class="mt-3 leading-relaxed text-[#4a4636]">
+        Panic alerts, encrypted chat and mutual aid — one tap away, hidden behind a calculator.
+      </p>
+    </div>
+    <div class="absolute -right-2 bottom-0 text-7xl opacity-80" aria-hidden="true">✦</div>
+  </section>
+
+  <section class="mt-6">
+    <h2 class="font-display text-xl mb-3">What do you need?</h2>
+    <div class="grid grid-cols-2 gap-3">
+      <%= link_to panic_path, class: "tile canva-card p-4 rounded-2xl block" do %>
+        <span class="text-2xl block mb-3" aria-hidden="true">◌</span>
+        <span class="font-semibold block">Panic alert</span>
+        <span class="text-sm text-[#7d7862]">Reach your circle now</span>
+      <% end %>
+      <%= link_to circle_path, class: "tile canva-card p-4 rounded-2xl block" do %>
+        <span class="text-2xl block mb-3" aria-hidden="true">◉</span>
+        <span class="font-semibold block">Trusted circle</span>
+        <span class="text-sm text-[#7d7862]">Your people, one ring</span>
+      <% end %>
+      <%= link_to chat_path, class: "tile canva-card p-4 rounded-2xl block" do %>
+        <span class="text-2xl block mb-3" aria-hidden="true">◒</span>
+        <span class="font-semibold block">Encrypted chat</span>
+        <span class="text-sm text-[#7d7862]">Disappears on timer</span>
+      <% end %>
+      <%= link_to aid_path, class: "tile canva-card p-4 rounded-2xl block" do %>
+        <span class="text-2xl block mb-3" aria-hidden="true">✧</span>
+        <span class="font-semibold block">Mutual aid</span>
+        <span class="text-sm text-[#7d7862]">Ask, offer, keep score</span>
+      <% end %>
+    </div>
+
+    <%= link_to community_path, class: "canva-banner w-full flex items-center justify-between rounded-2xl p-4 mt-3 block" do %>
+      <span>
+        <span class="block font-semibold">Neighbourhood</span>
+        <span class="block text-sm mt-1 opacity-90">Stories, events and neighbour votes</span>
+      </span>
+      <%= icon "arrow-right", size: 19 %>
+    <% end %>
+  </section>
+</div>
+
+<%= render "shared/bottom_nav" %>

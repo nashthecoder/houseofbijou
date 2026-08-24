@@ -1,0 +1,52 @@
+<% symbols = ["🌸", "🌻", "🐝", "🦋"].flat_map { |s| [s, s] }.shuffle %>
+<div data-controller="tilegame calculator" class="pb-6">
+  <header class="flex items-center justify-between pt-2 pb-5">
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight">Tile match</h1>
+      <p class="text-sm opacity-60">Find all four pairs</p>
+    </div>
+    <button type="button" data-action="calculator#tapTemperature" aria-label="Game score"
+            class="rounded-full bg-black/5 px-4 py-2 text-sm font-semibold cursor-default select-none">
+      <span data-tilegame-target="moves">Moves: 0</span>
+    </button>
+  </header>
+
+  <div data-tilegame-target="board" class="grid grid-cols-4 gap-3" aria-label="Game board">
+    <% symbols.each_with_index do |symbol, index| %>
+      <button type="button" data-tilegame-target="tile" data-symbol="<%= symbol %>"
+              data-action="tilegame#flip" aria-label="Hidden tile <%= index + 1 %>"
+              class="tg-tile aspect-square rounded-2xl text-3xl font-semibold select-none">
+        <span class="tg-face"><%= symbol %></span>
+      </button>
+    <% end %>
+  </div>
+
+  <button type="button" data-action="tilegame#restart"
+          class="mt-6 w-full min-h-[48px] rounded-2xl bg-black/5 font-semibold">Shuffle &amp; restart</button>
+
+  <div data-calculator-target="pad" class="screen-hidden fixed inset-x-0 bottom-0 z-30 mx-auto max-w-[480px] rounded-t-3xl bg-slate-900/95 backdrop-blur px-6 pt-6 pb-8 shadow-2xl">
+    <p class="text-center text-slate-300 text-sm">Enter passcode</p>
+    <div class="flex justify-center gap-3 mt-4" aria-hidden="true">
+      <span class="w-2.5 h-2.5 rounded-full bg-slate-300 transition-colors" data-dot></span>
+      <span class="w-2.5 h-2.5 rounded-full bg-slate-300 transition-colors" data-dot></span>
+      <span class="w-2.5 h-2.5 rounded-full bg-slate-300 transition-colors" data-dot></span>
+      <span class="w-2.5 h-2.5 rounded-full bg-slate-300 transition-colors" data-dot></span>
+    </div>
+    <div class="grid grid-cols-3 gap-3 mt-5">
+      <% ["1","2","3","4","5","6","7","8","9","","0","⌫"].each do |d| %>
+        <% if d == "" %>
+          <span></span>
+        <% elsif d == "⌫" %>
+          <button type="button" data-action="calculator#clearCode"
+                  class="min-h-[56px] rounded-full bg-white/10 text-slate-200 text-xl active:bg-white/20">⌫</button>
+        <% else %>
+          <button type="button" data-digit="<%= d %>" data-action="calculator#digit"
+                  class="min-h-[56px] rounded-full bg-white/10 text-slate-50 text-2xl font-light active:bg-white/25"><%= d %></button>
+        <% end %>
+      <% end %>
+    </div>
+    <p class="sr-only">Passcode entry</p>
+  </div>
+
+  <p class="text-center opacity-40 text-xs mt-6">Tiles v1.2 · offline ready</p>
+</div>

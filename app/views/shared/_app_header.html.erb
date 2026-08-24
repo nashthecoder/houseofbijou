@@ -1,0 +1,14 @@
+<header class="px-5 pt-5 pb-3 flex justify-between items-center">
+  <div class="flex items-center gap-3">
+    <%= image_tag "bijou-logo.png", class: "brand-logo", alt: "House of Bijou logo" %>
+    <div>
+      <p class="uppercase tracking-[.18em] text-xs font-bold text-[#8f8a70]">House of Bijou</p>
+      <h1 class="font-display text-2xl leading-tight">Your safe space</h1>
+    </div>
+  </div>
+  <%= button_to hide_path, method: :post, form: { class: "inline" },
+        class: "canva-button h-11 w-11 rounded-full flex items-center justify-center",
+        aria: { label: "Hide House of Bijou and return to disguise" }, title: "Hide" do %>
+    <%= icon "eye-off", size: 19 %>
+  <% end %>
+</header>

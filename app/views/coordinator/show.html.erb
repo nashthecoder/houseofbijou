@@ -1,0 +1,121 @@
+<div class="grid gap-8 lg:grid-cols-3">
+  <div class="lg:col-span-2 space-y-8">
+    <section>
+      <h1 class="font-display text-4xl text-[#262019]">Holding the community</h1>
+      <p class="mt-3 max-w-xl leading-relaxed text-[#4a4636]">
+        A quiet desk for the people who keep the circle safe. Review alerts, watch aid flows,
+        moderate with values — dignity first, no outing, ever.
+      </p>
+    </section>
+
+    <section aria-label="Key metrics" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <article class="canva-card rounded-2xl p-5">
+        <p class="text-xs uppercase tracking-wide text-[#7d7862]">Open aid</p>
+        <strong class="block font-display text-4xl mt-2"><%= @open_requests %></strong>
+        <p class="text-sm mt-1 text-[#4a4636]">requests in motion</p>
+      </article>
+      <article class="canva-card rounded-2xl p-5">
+        <p class="text-xs uppercase tracking-wide text-[#7d7862]">Circle</p>
+        <strong class="block font-display text-4xl mt-2"><%= @circle_size %></strong>
+        <p class="text-sm mt-1 text-[#4a4636]">trusted members</p>
+      </article>
+      <article class="canva-card rounded-2xl p-5 <%= "border-[#e3cda0] bg-[#f8f2de]" if @unreviewed_alerts.positive? %>">
+        <p class="text-xs uppercase tracking-wide text-[#7d7862]">Alerts to review</p>
+        <strong class="block font-display text-4xl mt-2 <%= "text-[#7a5216]" if @unreviewed_alerts.positive? %>"><%= @unreviewed_alerts %></strong>
+        <p class="text-sm mt-1 text-[#4a4636]">follow-ups due within 24h</p>
+      </article>
+      <article class="canva-card rounded-2xl p-5">
+        <p class="text-xs uppercase tracking-wide text-[#7d7862]">Proposals</p>
+        <strong class="block font-display text-4xl mt-2"><%= VoteProposal.count %></strong>
+        <p class="text-sm mt-1 text-[#4a4636]">open for votes</p>
+      </article>
+    </section>
+
+    <section class="canva-panel rounded-3xl p-6">
+      <div class="flex items-center justify-between gap-4">
+        <div>
+          <h2 class="font-semibold text-lg">Alert follow-up queue</h2>
+          <p class="text-sm mt-1 text-[#4a4636]">Every panic alert needs a human follow-up — a call, a visit, or a quiet check-in.</p>
+        </div>
+        <%= button_to @unreviewed_alerts.positive? ? "Mark all reviewed" : "Queue is clear", coordinator_review_path,
+              disabled: @unreviewed_alerts.zero?,
+              class: "canva-button rounded-xl px-5 min-h-[44px] shrink-0 font-semibold",
+              form: { class: "contents" } %>
+      </div>
+
+      <% if @recent_alerts.any? %>
+        <ul class="mt-5 divide-y divide-[#e0e5cc]">
+          <% @recent_alerts.each do |alert| %>
+            <li class="flex items-center justify-between py-3 gap-4">
+              <span class="flex items-center gap-3 flex-wrap">
+                <span class="w-2.5 h-2.5 rounded-full <%= alert.reviewed_at? ? "bg-[#adc084]" : "bg-[#d9b98a] pulse" %>"></span>
+                <span class="font-semibold"><%= alert.contacts_notified %> contacts alerted</span>
+                <span class="text-sm text-[#7d7862]">via <%= alert.delivered_via.downcase %></span>
+                <% if alert.coordinates_label %>
+                  <span class="text-xs font-mono bg-[#eef0df] border border-[#d3d8bc] rounded px-1.5 py-0.5"
+                        title="Location shared with the alert">📍 <%= alert.coordinates_label %></span>
+                <% end %>
+                <% if alert.sms_status.present? %>
+                  <span class="text-xs text-[#7d7862]">SMS <%= alert.sms_status %></span>
+                <% end %>
+              </span>
+              <span class="text-sm text-[#7d7862] whitespace-nowrap">
+                <%= alert.created_at.strftime("%a %d %b · %H:%M") %>
+                <% if alert.reviewed_at? %>· reviewed<% end %>
+              </span>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="mt-5 text-sm text-[#7d7862]">No alerts have been triggered yet. Quiet is good.</p>
+      <% end %>
+    </section>
+  </div>
+
+  <aside class="space-y-6">
+    <section class="canva-panel rounded-3xl p-6">
+      <h2 class="font-semibold text-lg">Values moderation</h2>
+      <p class="text-sm mt-2 leading-relaxed text-[#4a4636]">
+        Flagged posts route here for review against the values agreement. Protect each other;
+        never share a member's name, face or location outside the circle.
+      </p>
+      <%= button_to "Open moderation queue", coordinator_moderate_path,
+            class: "canva-button w-full rounded-xl mt-4 min-h-[46px] font-semibold",
+            form: { class: "contents" } %>
+    </section>
+
+    <section class="canva-card rounded-3xl p-6">
+      <h2 class="font-semibold text-lg">Aid needing attention</h2>
+      <% if @open_aid.any? %>
+        <ul class="mt-4 space-y-4">
+          <% @open_aid.each do |request| %>
+            <li>
+              <div class="flex justify-between items-baseline gap-3">
+                <span class="font-semibold text-sm"><%= request.title %></span>
+                <span class="text-xs text-[#7d7862] whitespace-nowrap">by <%= request.deadline_label %></span>
+              </div>
+              <div class="mt-2 h-1.5 rounded-full bg-[#e3e8d0] overflow-hidden">
+                <div class="h-full bg-[#a5793a] rounded-full" style="width: <%= request.progress_percent %>%"></div>
+              </div>
+              <p class="text-xs mt-1.5 text-[#4a4636]">
+                KSh <%= number_with_delimiter(request.pledged_amount) %> of
+                KSh <%= number_with_delimiter(request.target_amount) %> ·
+                <%= pluralize(request.pledges.count, "pledge") %>
+              </p>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="mt-4 text-sm text-[#7d7862]">No open requests right now.</p>
+      <% end %>
+    </section>
+
+    <section class="rounded-3xl bg-[#2e2818] text-[#fbfaf2] p-6">
+      <h2 class="font-display text-xl">Coordinator's reminder</h2>
+      <p class="text-sm mt-2 opacity-90 leading-relaxed">
+        You see queues and aggregates — never anyone's chats, contacts or private activity.
+        That boundary is the community's trust in you.
+      </p>
+    </section>
+  </aside>
+</div>

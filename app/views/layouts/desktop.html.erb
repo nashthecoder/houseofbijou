@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>House of Bijou — Coordinator</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <link rel="icon" href="<%= asset_path "favicon.png" %>" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+    <style>html { font-size: <%= settings.text_scale || 18 %>px; }</style>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="<%= "high-contrast" if settings.high_contrast %> bg-[#eef0df]">
+    <div class="min-h-dvh flex flex-col">
+      <header class="border-b border-[#dadfc2] bg-[#fbfaf2]/95 backdrop-blur sticky top-0 z-20">
+        <div class="max-w-6xl mx-auto px-8 py-4 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <%= image_tag "bijou-logo.png", class: "brand-logo !w-10 !h-10", alt: "House of Bijou logo" %>
+            <div class="flex items-baseline gap-3">
+              <span class="font-display text-xl text-[#2e2818]">House of Bijou</span>
+              <span class="uppercase tracking-[.16em] text-[11px] font-bold text-[#a5793a]">Coordinator</span>
+            </div>
+          </div>
+          <nav class="flex items-center gap-6" aria-label="Coordinator navigation">
+            <%= link_to "Back to the app", dashboard_path, class: "text-sm font-semibold text-[#6e6a58] hover:text-[#2e2818]" %>
+            <%= button_to hide_path, method: :post, form: { class: "inline" },
+                  class: "canva-button rounded-full h-9 px-4 text-sm font-semibold",
+                  aria: { label: "Hide House of Bijou and return to disguise" } do %>
+              Hide
+            <% end %>
+          </nav>
+        </div>
+      </header>
+
+      <main class="flex-1 max-w-6xl w-full mx-auto px-8 py-10">
+        <%= yield %>
+      </main>
+
+      <footer class="max-w-6xl mx-auto w-full px-8 pb-8 text-sm text-[#8f8a70]">
+        Coordinators see queues and aggregates only — never members' chats, contacts or private activity.
+      </footer>
+
+      <%= render "shared/toast" %>
+    </div>
+  </body>
+</html>

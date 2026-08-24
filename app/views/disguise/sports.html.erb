@@ -1,0 +1,71 @@
+<div data-controller="calculator" class="pb-6 text-slate-100">
+  <header class="flex items-center justify-between pt-2 pb-5">
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight">Scores</h1>
+      <p class="text-sm text-slate-400">Tuesday · matchday 24</p>
+    </div>
+    <span class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center" aria-hidden="true">⚽</span>
+  </header>
+
+  <div class="flex gap-2 pb-4" role="tablist" aria-label="Leagues">
+    <% [ ["Live", true], ["Premier", false], ["La Liga", false], ["CAF", false] ].each do |league, active| %>
+      <button type="button" role="tab" aria-selected="<%= active %>"
+              class="px-4 py-1.5 rounded-full text-sm font-semibold <%= active ? "bg-[var(--skin-accent,#3b82f6)] text-white" : "bg-white/10 text-slate-300" %>">
+        <%= league %>
+      </button>
+    <% end %>
+  </div>
+
+  <section class="space-y-3" aria-label="Match scores">
+    <% matches = [
+         { home: "AFC Leopards", away: "Gor Mahia", hs: 1, as: 1, minute: "67'", live: true },
+         { home: "Tusker FC", away: "Ulinzi Stars", hs: 0, as: 2, minute: "FT", live: false },
+         { home: "Nairobi City", away: "Sofapaka", hs: 3, as: 0, minute: "58'", live: true },
+         { home: "Bandari", away: "KCB", hs: 1, as: 2, minute: "FT", live: false },
+         { home: "Mathare United", away: "Posta Rangers", hs: "-", as: "-", minute: "20:00", live: false }
+       ] %>
+    <% matches.each_with_index do |match, index| %>
+      <div <% if index.zero? %>data-action="click->calculator#tapTemperature" aria-label="Live match"<% end %>
+               class="rounded-2xl bg-white/5 border border-white/10 p-4">
+        <div class="flex justify-between text-xs text-slate-400 mb-2">
+          <span>FKFPL</span>
+          <span class="flex items-center gap-1.5 font-semibold <%= "text-red-400" if match[:live] %>">
+            <% if match[:live] %><span class="pulse w-1.5 h-1.5 rounded-full bg-red-400 inline-block"></span><% end %>
+            <%= match[:minute] %>
+          </span>
+        </div>
+        <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+          <p class="font-semibold"><%= match[:home] %></p>
+          <p class="font-bold text-lg tabular-nums bg-black/30 rounded-lg px-3 py-1"><%= match[:hs] %> : <%= match[:as] %></p>
+          <p class="font-semibold text-right"><%= match[:away] %></p>
+        </div>
+      </div>
+    <% end %>
+  </section>
+
+  <div data-calculator-target="pad" class="screen-hidden fixed inset-x-0 bottom-0 z-30 mx-auto max-w-[480px] rounded-t-3xl bg-slate-900/95 backdrop-blur px-6 pt-6 pb-8 shadow-2xl">
+    <p class="text-center text-slate-300 text-sm">Enter passcode</p>
+    <div class="flex justify-center gap-3 mt-4" aria-hidden="true">
+      <span class="w-2.5 h-2.5 rounded-full bg-slate-300 transition-colors" data-dot></span>
+      <span class="w-2.5 h-2.5 rounded-full bg-slate-300 transition-colors" data-dot></span>
+      <span class="w-2.5 h-2.5 rounded-full bg-slate-300 transition-colors" data-dot></span>
+      <span class="w-2.5 h-2.5 rounded-full bg-slate-300 transition-colors" data-dot></span>
+    </div>
+    <div class="grid grid-cols-3 gap-3 mt-5">
+      <% ["1","2","3","4","5","6","7","8","9","","0","⌫"].each do |d| %>
+        <% if d == "" %>
+          <span></span>
+        <% elsif d == "⌫" %>
+          <button type="button" data-action="calculator#clearCode"
+                  class="min-h-[56px] rounded-full bg-white/10 text-slate-200 text-xl active:bg-white/20">⌫</button>
+        <% else %>
+          <button type="button" data-digit="<%= d %>" data-action="calculator#digit"
+                  class="min-h-[56px] rounded-full bg-white/10 text-slate-50 text-2xl font-light active:bg-white/25"><%= d %></button>
+        <% end %>
+      <% end %>
+    </div>
+    <p class="sr-only">Passcode entry</p>
+  </div>
+
+  <p class="text-center text-slate-500 text-xs mt-6">Scores refresh automatically</p>
+</div>

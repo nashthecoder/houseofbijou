@@ -1,0 +1,5 @@
+<% if flash[:toast].present? %>
+  <div id="toast" class="toast bg-[#262019] text-white" role="status" data-controller="toast">
+    <%= flash[:toast] %>
+  </div>
+<% end %>

@@ -1,0 +1,39 @@
+<div class="flex flex-col items-center pt-10 mb-4">
+  <%= image_tag "bijou-logo.png", class: "brand-logo !w-16 !h-16", alt: "House of Bijou logo" %>
+</div>
+<div class="px-5">
+  <div class="rounded-[28px] canva-panel p-6 view-enter">
+    <p class="uppercase tracking-[.18em] text-xs font-bold text-[#8f8a70]">One last step</p>
+    <h1 class="font-display text-3xl mt-2">Who will your circle see?</h1>
+    <p class="mt-3 leading-relaxed text-[#4a4636]">
+      Choose a pseudonym and an avatar colour. This is the only identity ever shown in chat,
+      stories or mutual aid — no real name, anywhere.
+    </p>
+
+    <%= form_with model: settings, url: onboarding_path, method: :post,
+          aria: { label: "Identity setup" } do |form| %>
+      <label for="setting_pseudonym" class="block mt-5 font-semibold">Your pseudonym</label>
+      <%= form.text_field :pseudonym, id: "setting_pseudonym", required: true, maxlength: 40,
+            autocomplete: "off", placeholder: "e.g. Zawadi",
+            class: "w-full mt-1 rounded-xl border border-[#d3d8bc] px-4 min-h-[52px] bg-white" %>
+
+      <fieldset class="mt-5">
+        <legend class="font-semibold">Avatar colour</legend>
+        <div class="flex gap-3 mt-2" role="radiogroup" aria-label="Avatar colour">
+          <% @colors.each_with_index do |color, index| %>
+            <label class="cursor-pointer" title="<%= color %>">
+              <%= form.radio_button :avatar_color, color,
+                    checked: settings.avatar_color.blank? ? index.zero? : settings.avatar_color == color,
+                    class: "sr-only peer", "aria-label": "Avatar colour #{color}" %>
+              <span class="block w-11 h-11 rounded-full peer-checked:ring-4 ring-[#2e2818] ring-offset-2" style="background: <%= color %>"></span>
+            </label>
+          <% end %>
+        </div>
+      </fieldset>
+
+      <%= form.submit "Enter House of Bijou",
+            class: "canva-button w-full rounded-2xl min-h-[54px] mt-7 font-semibold" %>
+    <% end %>
+  </div>
+  <p class="text-center text-sm text-[#7d7862] mt-6 mb-4">You can change this later in Settings.</p>
+</div>

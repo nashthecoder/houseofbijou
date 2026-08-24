@@ -1,0 +1,78 @@
+<%= render "shared/app_header" %>
+
+<div class="px-5">
+  <div class="flex justify-between items-end mt-3">
+    <div>
+      <h2 class="font-display text-3xl">Mutual aid</h2>
+      <p class="mt-1 text-[#4a4636]">Ask and offer inside your circle.</p>
+    </div>
+    <details class="shrink-0">
+      <summary class="canva-button rounded-xl min-h-[44px] px-4 flex items-center cursor-pointer list-none font-semibold">
+        <%= icon "plus", size: 16, css_class: "mr-1" %> New
+      </summary>
+      <div class="absolute left-5 right-5 z-10 mt-2 rounded-2xl p-4 bg-[#f3f6e3] border border-[#d9e0bf] shadow-xl">
+        <%= form_with model: AidRequest.new, url: aid_requests_path, class: "block" do |form| %>
+          <label for="aid_request_title" class="font-semibold block mb-1">What do you need?</label>
+          <%= form.text_field :title, id: "aid_request_title", required: true,
+                class: "w-full rounded-lg border border-[#d3d8bc] p-3 bg-white",
+                placeholder: "Rent gap, clinic fee, food…" %>
+          <div class="grid grid-cols-2 gap-3 mt-3">
+            <div>
+              <label for="aid_request_target_amount" class="font-semibold block mb-1">Amount (KSh)</label>
+              <%= form.number_field :target_amount, id: "aid_request_target_amount", min: 1, required: true,
+                    class: "w-full rounded-lg border border-[#d3d8bc] p-3 bg-white" %>
+            </div>
+            <div>
+              <label for="aid_request_deadline" class="font-semibold block mb-1">By when</label>
+              <%= form.date_field :deadline, id: "aid_request_deadline",
+                    class: "w-full rounded-lg border border-[#d3d8bc] p-3 bg-white" %>
+            </div>
+          </div>
+          <p class="text-sm mt-3 text-[#4a4636]">
+            Visible only to your trusted circle. The ledger shows who gave what — always.
+          </p>
+          <%= form.submit "Open this request",
+                class: "canva-button mt-3 w-full min-h-[46px] rounded-xl font-semibold" %>
+        <% end %>
+      </div>
+    </details>
+  </div>
+
+  <div class="space-y-4 mt-5" aria-label="Aid requests feed">
+    <% @requests.each do |request| %>
+      <%= link_to aid_request_path(request), class: "canva-card rounded-2xl p-4 block tile" do %>
+        <div class="flex justify-between gap-3">
+          <div class="min-w-0">
+            <h3 class="font-semibold truncate"><%= request.title %></h3>
+            <p class="text-sm mt-1 text-[#4a4636]">
+              KSh <%= number_with_delimiter(request.pledged_amount) %> of
+              KSh <%= number_with_delimiter(request.target_amount) %>
+            </p>
+          </div>
+          <span class="canva-tag h-fit px-2 py-1 rounded-lg text-xs whitespace-nowrap">
+            by <%= request.deadline_label %>
+          </span>
+        </div>
+        <div class="mt-3 h-2 rounded-full bg-[#e3e8d0] overflow-hidden"
+             role="progressbar" aria-valuenow="<%= request.progress_percent %>"
+             aria-valuemin="0" aria-valuemax="100" aria-label="Progress toward goal">
+          <div class="h-full bg-[#a5793a] rounded-full" style="width: <%= request.progress_percent %>%"></div>
+        </div>
+        <div class="flex justify-between mt-2 text-sm text-[#7d7862]">
+          <span><%= request.progress_percent %>% funded · <%= pluralize(request.pledges.count, "pledge") %></span>
+          <span class="font-semibold text-[#a5793a]">View →</span>
+        </div>
+      <% end %>
+    <% end %>
+    <% if @requests.empty? %>
+      <p class="canva-panel rounded-2xl p-4 text-sm text-[#4a4636]">No open requests. Tap “New” to ask your circle.</p>
+    <% end %>
+  </div>
+
+  <p class="text-sm mt-5 mb-2 text-[#7d7862]">
+    The ledger lives on your devices, not in a company database. Consistent giving builds
+    quiet standing in the circle — never a credit score for outsiders.
+  </p>
+</div>
+
+<%= render "shared/bottom_nav" %>

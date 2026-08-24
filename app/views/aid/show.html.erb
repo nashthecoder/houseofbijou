@@ -1,0 +1,61 @@
+<%= render "shared/app_header" %>
+
+<div class="px-5">
+  <%= link_to aid_path, class: "inline-flex items-center gap-1.5 text-sm text-[#7d7862] mt-3",
+        aria: { label: "Back to mutual aid feed" } do %>
+    <%= icon "arrow-left", size: 14 %> All requests
+  <% end %>
+
+  <article class="canva-card rounded-2xl p-5 mt-3 view-enter">
+    <span class="canva-tag px-2 py-1 rounded-lg text-xs"><%= @request.status == "open" ? "Open request" : "Need met" %></span>
+    <h2 class="font-display text-2xl mt-3"><%= @request.title %></h2>
+    <p class="mt-2 text-[#4a4636]">
+      KSh <%= number_with_delimiter(@request.pledged_amount) %> raised of
+      KSh <%= number_with_delimiter(@request.target_amount) %> ·
+      by <%= @request.deadline_label %>
+    </p>
+    <div class="mt-4 h-2.5 rounded-full bg-[#e3e8d0] overflow-hidden"
+         role="progressbar" aria-valuenow="<%= @request.progress_percent %>"
+         aria-valuemin="0" aria-valuemax="100" aria-label="Progress toward goal">
+      <div class="h-full bg-[#a5793a] rounded-full" style="width: <%= @request.progress_percent %>%"></div>
+    </div>
+    <div class="flex justify-between mt-2 text-sm text-[#4a4636]">
+      <span><%= @request.progress_percent %>%</span>
+      <span><%= pluralize(@request.pledges.count, "pledge") %></span>
+    </div>
+
+    <% if @request.status == "open" %>
+      <%= button_to "Offer help", aid_pledge_path(@request),
+            class: "canva-button mt-5 w-full min-h-[50px] rounded-xl font-semibold",
+            form: { class: "contents" } %>
+    <% else %>
+      <p class="mt-5 text-center font-semibold text-[#67856d]">This need has been met ♥</p>
+    <% end %>
+  </article>
+
+  <section class="canva-panel rounded-2xl p-4 mt-4">
+    <h3 class="font-semibold">Pledge ledger</h3>
+    <p class="text-xs uppercase tracking-wide text-[#8f8a70] mt-1">Who gave what, when</p>
+    <% if @request.pledges.any? %>
+      <% @request.pledges.order(created_at: :desc).each do |pledge| %>
+        <div class="flex items-center gap-3 mt-3">
+          <span class="w-9 h-9 rounded-full flex items-center justify-center font-bold bg-[#adc084]"
+                aria-hidden="true"><%= pledge.helper_name.first.upcase %></span>
+          <p class="text-sm">
+            <strong><%= pledge.helper_name %></strong> ·
+            <%= pledge.note || (pledge.kind == "given" ? "Offered help" : "Made a pledge") %>
+            <% if pledge.amount.present? %> · KSh <%= number_with_delimiter(pledge.amount) %><% end %>
+          </p>
+        </div>
+      <% end %>
+    <% else %>
+      <p class="text-sm mt-3 text-[#7d7862]">No pledges yet — the first offer starts the ledger.</p>
+    <% end %>
+  </section>
+
+  <p class="text-sm mt-4 mb-2 text-[#7d7862]">
+    The ledger lives on your devices, not in a company database.
+  </p>
+</div>
+
+<%= render "shared/bottom_nav" %>

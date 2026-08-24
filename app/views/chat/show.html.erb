@@ -1,0 +1,73 @@
+<%= render "shared/app_header" %>
+
+<div class="px-5" data-controller="countdown">
+  <div class="canva-header rounded-2xl p-4 mt-2 flex items-center gap-3">
+    <%= link_to chat_path, class: "w-9 h-9 rounded-full bg-white border border-[#d3d8bc] flex items-center justify-center shrink-0",
+          aria: { label: "Back to chats" } do %>
+      <%= icon "arrow-left", size: 16 %>
+    <% end %>
+    <span class="w-11 h-11 rounded-full flex items-center justify-center font-bold shrink-0"
+          style="background: <%= @conversation.color %>" aria-hidden="true"><%= @conversation.initial %></span>
+    <div class="flex-1">
+      <h2 class="font-semibold"><%= @conversation.title %></h2>
+      <p class="text-sm flex items-center gap-1 text-[#6e6a58]">
+        <%= icon "lock-keyhole", size: 13 %>
+        End-to-end encrypted · timer: <%= settings.chat_timer_label %>
+      </p>
+    </div>
+    <%= button_to chat_timer_path(thread: @conversation.id),
+          class: "canva-button rounded-full w-11 h-11 flex items-center justify-center",
+          form: { class: "inline", title: "Change disappearing message timer" },
+          aria: { label: "Change disappearing message timer" } do %>
+      <%= icon "timer", size: 18 %>
+    <% end %>
+  </div>
+
+  <p class="text-sm leading-relaxed py-4 text-[#4a4636]">
+    Messages live only on your two devices. The relay passes them through in memory and
+    forgets them instantly.
+  </p>
+
+  <div id="messages" class="space-y-3 pb-4" aria-live="polite">
+    <% @messages.each do |message| %>
+      <% if message.sender == "you" %>
+        <div class="rounded-2xl rounded-tr-sm p-3 max-w-[80%] ml-auto bg-[#2e2818] text-white view-enter"
+             data-countdown-expires-at="<%= message.expires_at&.iso8601 %>">
+          <p><%= message.body %></p>
+          <% if message.expires_at %>
+            <p class="text-xs opacity-70 mt-1"><%= message.expires_at.strftime("%H:%M") %> · disappears</p>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="canva-card rounded-2xl rounded-tl-sm p-3 max-w-[80%]"
+             data-countdown-expires-at="<%= message.expires_at&.iso8601 %>">
+          <p><%= message.body %></p>
+          <% if message.expires_at %>
+            <p class="text-xs text-[#8f8a70] mt-1"><%= message.expires_at.strftime("%H:%M") %> · disappears</p>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+
+  <%= form_with model: @message, url: chat_messages_path(@conversation), method: :post,
+        class: "sticky bottom-[76px] bg-[#fbfaf2] py-2 space-y-2",
+        aria: { label: "Send a chat message" } do |form| %>
+    <%= form.label :expires_in, "Disappears after", class: "sr-only" %>
+    <%= form.select :expires_in, ChatController::PER_MESSAGE_CHOICES.keys,
+          {}, id: "message_expires_in",
+          class: "w-full rounded-xl border border-[#d3d8bc] bg-white px-3 py-2 text-sm" %>
+    <div class="flex gap-2">
+      <label class="sr-only" for="message_body">Message</label>
+      <%= form.text_field :body, id: "message_body", required: true, autocomplete: "off",
+            placeholder: "Write a message",
+            class: "flex-1 rounded-xl border border-[#d3d8bc] px-4 min-h-[50px] bg-white" %>
+      <button type="submit" aria-label="Send message"
+              class="canva-button rounded-xl w-14 shrink-0 flex items-center justify-center">
+        <%= icon "send", size: 18 %>
+      </button>
+    </div>
+  <% end %>
+</div>
+
+<%= render "shared/bottom_nav" %>

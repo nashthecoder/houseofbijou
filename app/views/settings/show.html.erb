@@ -1,0 +1,82 @@
+<%= render "shared/app_header" %>
+
+<div class="px-5">
+  <h2 class="font-display text-3xl mt-3">Settings</h2>
+
+  <section class="canva-card rounded-2xl p-4 mt-5">
+    <h3 class="font-semibold">Your identity</h3>
+    <p class="text-sm mt-1 text-[#4a4636]">
+      Your pseudonym and avatar colour are the only identity anyone inside House of Bijou ever sees.
+    </p>
+    <%= form_with model: settings, url: settings_path, method: :patch,
+          data: { controller: "autosubmit", action: "change->autosubmit#changed" } do |form| %>
+      <label for="setting_pseudonym" class="block text-sm mt-3 font-semibold">Pseudonym</label>
+      <%= form.text_field :pseudonym, id: "setting_pseudonym", maxlength: 40, autocomplete: "off",
+            class: "w-full mt-1 rounded-xl border border-[#d3d8bc] px-4 min-h-[48px] bg-white" %>
+      <fieldset class="mt-3">
+        <legend class="text-sm font-semibold">Avatar colour</legend>
+        <div class="flex gap-3 mt-2" role="radiogroup" aria-label="Avatar colour">
+          <% Setting::AVATAR_COLORS.each do |color| %>
+            <label class="cursor-pointer" title="<%= color %>">
+              <%= form.radio_button :avatar_color, color, checked: settings.avatar_color == color,
+                    class: "sr-only peer", "aria-label": "Avatar colour #{color}" %>
+              <span class="block w-9 h-9 rounded-full peer-checked:ring-4 ring-[#2e2818] ring-offset-2" style="background: <%= color %>"></span>
+            </label>
+          <% end %>
+        </div>
+      </fieldset>
+      <label for="setting_recovery_email" class="block text-sm mt-3 font-semibold">Recovery email <span class="font-normal text-[#7d7862]">(optional, never shown)</span></label>
+      <%= form.email_field :recovery_email, id: "setting_recovery_email", autocomplete: "off",
+            placeholder: "you@example.com",
+            class: "w-full mt-1 rounded-xl border border-[#d3d8bc] px-4 min-h-[48px] bg-white" %>
+    <% end %>
+  </section>
+
+  <section class="canva-card rounded-2xl p-4 mt-3">
+    <h3 class="font-semibold">Accessibility</h3>
+    <%= form_with model: settings, url: settings_path, method: :patch,
+          data: { controller: "autosubmit", action: "change->autosubmit#changed" } do |form| %>
+      <label for="setting_text_scale" class="block text-sm mt-3">Text size</label>
+      <%= form.range_field :text_scale, id: "setting_text_scale", min: 16, max: 22,
+            class: "w-full accent-[#2e2818]" %>
+      <label class="mt-3 flex items-center justify-between gap-4" for="setting_high_contrast">
+        <span>High contrast mode</span>
+        <%= form.check_box :high_contrast, id: "setting_high_contrast", class: "w-5 h-5 accent-[#2e2818]" %>
+      </label>
+    <% end %>
+  </section>
+
+  <section class="canva-card rounded-2xl p-4 mt-3">
+    <h3 class="font-semibold">Stealth</h3>
+    <%= form_with model: settings, url: settings_path, method: :patch, scope: :setting,
+          data: { controller: "autosubmit", action: "change->autosubmit#changed" } do |form| %>
+      <label for="setting_disguise" class="block text-sm mt-3">Disguise app</label>
+      <%= form.select :disguise, Setting::DISGUISES, {},
+            id: "setting_disguise",
+            class: "w-full mt-1 border border-[#d3d8bc] bg-white rounded-xl p-3" %>
+      <label for="setting_disguise_accent" class="block text-sm mt-3 font-semibold">
+        Skin accent colour <span class="font-normal text-[#7d7862]">(keys &amp; highlights)</span>
+      </label>
+      <%= form.color_field :disguise_accent, id: "setting_disguise_accent",
+            value: settings.disguise_accent.presence || "#5d7485",
+            class: "w-12 h-12 rounded-xl border border-[#d3d8bc] bg-white p-1 cursor-pointer mt-1" %>
+    <% end %>
+    <%= link_to circle_path,
+          class: "canva-button w-full rounded-xl mt-3 min-h-[48px] flex items-center justify-center" do %>
+      Manage your circle
+    <% end %>
+  </section>
+
+  <section class="canva-panel rounded-2xl p-4 mt-3 mb-2">
+    <h3 class="font-semibold">Coordinator tools</h3>
+    <p class="text-sm mt-1 text-[#4a4636]">
+      For the people holding the wider community — alert follow-ups, aid flows and moderation.
+    </p>
+    <%= link_to coordinator_path,
+          class: "canva-button w-full rounded-xl mt-3 min-h-[48px] flex items-center justify-center" do %>
+      Open coordinator view
+    <% end %>
+  </section>
+</div>
+
+<%= render "shared/bottom_nav" %>

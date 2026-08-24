@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <% title = { "Calculator" => "Calculator", "Weather" => "Weather", "Tile game" => "Tiles", "Sports" => "Scores" }.fetch(@disguise, "Weather") %>
+    <title><%= title %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="<%= title %>">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <% body_class = {
+       "Weather" => "bg-gradient-to-b from-sky-500 to-sky-800",
+       "Sports" => "bg-[#101418]"
+     }.fetch(@disguise, "") %>
+
+  <body class="<%= body_class %>" style="<%== "--skin-accent: #{@skin_accent};" if @skin_accent %>">
+    <main id="disguise-view" class="<%= @disguise == "Weather" ? "weather p-5 max-w-[480px] mx-auto min-h-dvh text-slate-100" : @disguise == "Calculator" ? "disguise p-5 min-h-dvh flex items-center justify-center" : "disguise p-5 max-w-[480px] mx-auto min-h-dvh" %>">
+      <%= yield %>
+    </main>
+  </body>
+</html>
